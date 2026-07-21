@@ -34,13 +34,19 @@ class Environments:
     def _configure_local(self):
         from dotenv import load_dotenv
         load_dotenv()
-        os.environ["STAGE"] = os.environ.get("STAGE") or STAGE.DOTENV.value
+
+        if not os.environ.get("STAGE") or os.environ.get("STAGE") == STAGE.DOTENV.value:
+            os.environ["STAGE"] = STAGE.TEST.value
 
     def load_envs(self):
         if "STAGE" not in os.environ or os.environ["STAGE"] == STAGE.DOTENV.value:
             self._configure_local()
 
-        self.stage = STAGE[os.environ.get("STAGE")]
+        stage_name = (os.environ.get("STAGE") or STAGE.TEST.value).upper()
+        if stage_name == STAGE.DOTENV.value:
+            stage_name = STAGE.TEST.value
+
+        self.stage = STAGE[stage_name]
         self.mss_name = os.environ.get("MSS_NAME")
         
         if self.stage == STAGE.TEST:

@@ -5,8 +5,7 @@ from src.shared.domain.entities.user import User, RoleEnum
 
 class Test_User:
     def test_user_creation_success(self):
-        """Sucesso ao criar usuário com dados válidos"""
-        user_id = uuid4()
+        user_id = str(uuid4())
         user = User(
             id=user_id,
             email="vitor@maua.br",
@@ -16,20 +15,21 @@ class Test_User:
         assert user.id == user_id
         assert user.email == "vitor@maua.br"
         assert user.role == RoleEnum.USER
+        assert user.senha_hash == "senha_secreta_123"
 
     def test_user_invalid_email(self):
-        """Pydantic deve barrar e-mail inválido"""
         with pytest.raises(ValidationError):
             User(
+                id=str(uuid4()),
                 email="vitor.maua.br",  # Sem o @
                 role=RoleEnum.USER,
                 senha_hash="123456"
             )
 
     def test_user_invalid_role(self):
-        """Pydantic deve barrar role que não existe no Enum"""
         with pytest.raises(ValidationError):
             User(
+                id=str(uuid4()),
                 email="vitor@maua.br",
                 role="INVALID_ROLE",
                 senha_hash="123456"

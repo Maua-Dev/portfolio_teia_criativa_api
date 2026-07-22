@@ -35,10 +35,3 @@ class IUserRepository(ABC):
         If user not found raise NoItemsFound
         """
         pass
-
-    @abstractmethod
-    def get_user_counter(self) -> int:
-        """
-        Returns the number of all users that have ever been created
-        """
-        pass

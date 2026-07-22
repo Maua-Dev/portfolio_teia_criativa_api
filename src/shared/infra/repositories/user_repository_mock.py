@@ -21,7 +21,7 @@ class UserRepositoryMock(IUserRepository):
         for user in self.users:
             if user.id == id:
                 return user
-        raise NoItemsFound("id")
+        return None
 
     def get_all_user(self) -> List[User]:
         return self.users
@@ -35,14 +35,11 @@ class UserRepositoryMock(IUserRepository):
             if user.id == id:
                 return self.users.pop(idx)
 
-        raise NoItemsFound("id")
+        return None
     
     def update_user(self, user: User) -> User:
         for idx, existing_user in enumerate(self.users):
             if existing_user.id == user.id:
                 self.users[idx] = user
                 return user
-        raise NoItemsFound("id")
-
-    def get_user_counter(self) -> int:
-        return len(self.users)
+        return None

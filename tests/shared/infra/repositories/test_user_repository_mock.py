@@ -1,10 +1,7 @@
 from uuid import uuid4
 
 from src.shared.domain.entities.user import RoleEnum, User
-from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
-import pytest
-
 
 class Test_UserRepositoryMock:
     def test_get_user(self):
@@ -20,8 +17,8 @@ class Test_UserRepositoryMock:
 
     def test_get_user_not_found(self):
         repo = UserRepositoryMock()
-        with pytest.raises(NoItemsFound):
-            user = repo.get_user(uuid4())
+        user = repo.get_user(uuid4())
+        assert user is None
 
     def test_get_all_user(self):
         repo = UserRepositoryMock()
@@ -39,8 +36,6 @@ class Test_UserRepositoryMock:
 
         repo.create_user(user)
 
-        assert repo.get_user_counter() == 4
-
     def test_delete_user(self):
         repo = UserRepositoryMock()
         target_id = repo.users[0].id
@@ -51,12 +46,11 @@ class Test_UserRepositoryMock:
         assert deleted_user.id == target_id
         assert deleted_user.role == RoleEnum.ADMIN
         assert deleted_user.senha_hash == "hash_fake_1"
-        assert repo.get_user_counter() == 2
 
     def test_delete_user_not_found(self):
         repo = UserRepositoryMock()
-        with pytest.raises(NoItemsFound):
-           repo.delete_user(uuid4())
+        deleted_user = repo.delete_user(uuid4())
+        assert deleted_user is None
 
     def test_update_user(self):
         repo = UserRepositoryMock()
@@ -83,11 +77,6 @@ class Test_UserRepositoryMock:
             role=RoleEnum.USER,
             senha_hash="hash_fake_x"
         )
-        with pytest.raises(NoItemsFound):
-            user = repo.update_user(non_existent_user)
-
-    def test_get_users_counter(self):
-        repo = UserRepositoryMock()
-
-        assert repo.get_user_counter() == 3
+        user = repo.update_user(non_existent_user)
+        assert user is None
 

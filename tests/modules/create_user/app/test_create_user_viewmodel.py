@@ -1,22 +1,22 @@
 from src.modules.create_user.app.create_user_viewmodel import CreateUserViewmodel
 from src.shared.domain.entities.user import User
-from src.shared.domain.enums.state_enum import STATE
+from src.shared.domain.enums.role_enum import RoleEnum
 
 
 class Test_CreateUserViewModel:
     def test_create_user_viewmodel(self):
         user = User(
-            user_id=1,
-            name="Vitor Soller",
-            email="vitinho@hype.com",
-            state=STATE.APPROVED
+            email="teste@teste.com",
+            role=RoleEnum.USER,
+            senha_hash="hash_seguro",
         )
-        userViewmodel = CreateUserViewmodel(user=user).to_dict()
+        viewmodel = CreateUserViewmodel(user)
 
-        expected = {'user_id': 1,
-                    'name': 'Vitor Soller',
-                    'email': 'vitinho@hype.com',
-                    'state': 'APPROVED',
-                    'message': 'the user was created successfully'}
+        response = viewmodel.to_dict()
 
-        assert expected == userViewmodel
+        assert response == {
+            'id': str(user.id),
+            'email': 'teste@teste.com',
+            'role': RoleEnum.USER.value,
+            'message': 'the user was created successfully'
+        }

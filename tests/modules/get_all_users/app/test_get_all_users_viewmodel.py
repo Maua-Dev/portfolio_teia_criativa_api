@@ -6,11 +6,13 @@ from src.shared.domain.enums.state_enum import STATE
 class Test_GetAllUsersViewmodel:
     all_users_list = [
         User(user_id=1,
+             senha_hash="qualquer_hash_valida",
              name="Lucas Duez",
              email="deuzexmachina@gmail.com",
              state=STATE.APPROVED),
 
         User(user_id=2,
+             senha_hash="qualquer_hash_valida",
              name="Laura Blablachan",
              email="laurinha@gmail.com",
              state=STATE.APPROVED),

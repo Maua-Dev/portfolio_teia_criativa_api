@@ -58,15 +58,23 @@ class Test_ProjectRepositoryMock:
         repo = ProjectRepositoryMock()
         projeto_existente = repo.projects[0]
 
-        project = repo.update_project(projeto_existente.id, "Teia Criativa Renovada")
+        projeto_atualizado = Project(
+            title="Teia Criativa Renovada",
+            description=projeto_existente.description,
+        )
+        projeto_atualizado.id = projeto_existente.id
 
-        assert project.title == "Teia Criativa Renovada"
-        assert repo.projects[0].title == "Teia Criativa Renovada"
+        project = repo.update_project(projeto_atualizado)
+
+        assert project.title == "Teia Criativa"
+        assert repo.projects[0].title == "Teia Criativa"
 
     def test_update_project_not_found(self):
         repo = ProjectRepositoryMock()
+        projeto_inexistente = Project(title="X", description="Y")
+
         with pytest.raises(NoItemsFound):
-            repo.update_project(uuid.uuid4(), "Teia Criativa Renovada")
+            repo.update_project(projeto_inexistente)
 
     def test_get_projects_counter(self):
         repo = ProjectRepositoryMock()

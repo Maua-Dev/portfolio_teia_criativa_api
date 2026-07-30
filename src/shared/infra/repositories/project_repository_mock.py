@@ -38,10 +38,10 @@ class ProjectRepositoryMock(IProjectRepository):
                 return self.projects.pop(idx)
         raise NoItemsFound("project_id")
 
-    def update_project(self, project_id: uuid.UUID, new_title: str) -> Project:
-        for project in self.projects:
-            if project.id == project_id:
-                project.title = new_title
+    def update_project(self, project: Project) -> Project:
+        for idx, existing_project in enumerate(self.projects):
+            if existing_project.id == project.id:
+                self.projects[idx] = project
                 return project
         raise NoItemsFound("project_id")
     

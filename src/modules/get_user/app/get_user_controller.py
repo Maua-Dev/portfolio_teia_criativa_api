@@ -7,7 +7,7 @@ from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
 from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadRequest, InternalServerError
 from aws_lambda_powertools import Logger
-
+import uuid
 
 
 class GetUserController:
@@ -15,6 +15,7 @@ class GetUserController:
     def __init__(self, usecase: GetUserUsecase, observability: ObservabilityAWS):
         self.GetUserUsecase = usecase
         self.observability = observability
+
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
@@ -29,12 +30,14 @@ class GetUserController:
                     fieldTypeReceived=request.data.get('user_id').__class__.__name__
                 )
 
-            if not request.data.get('user_id').isdecimal():
+            try:
+                user_id = uuid.UUID(request.data.get('user_id'))
+            except ValueError:
                 raise EntityError("user_id")
 
 
             user = self.GetUserUsecase(
-                user_id=int(request.data.get('user_id'))
+                user_id= str(user_id) 
             )
 
             viewmodel = GetUserViewmodel(user)

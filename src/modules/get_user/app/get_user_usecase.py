@@ -9,9 +9,9 @@ class GetUserUsecase:
         self.repo = repo
         self.observability = observability
 
-    def __call__(self, user_id: int) -> User:
+    def __call__(self, user_id: str) -> User:
         self.observability.log_usecase_in()
-        if type(user_id) != int:
+        if type(user_id) != str:
             raise EntityError("user_id")
         user = self.repo.get_user(user_id)
         self.observability.log_usecase_out()

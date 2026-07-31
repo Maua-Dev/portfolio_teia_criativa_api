@@ -79,6 +79,14 @@ class Environments:
             raise Exception("No repository found for this stage")
 
     @staticmethod
+    def get_user_repo() -> IUserRepository:
+        if Environments.get_envs().stage == STAGE.TEST:
+            from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
+            return UserRepositoryMock
+        else:
+            raise Exception("No repository found for this stage")
+
+    @staticmethod
     def get_observability() -> IObservability:
         if Environments.get_envs().stage == STAGE.TEST:
             from src.shared.infra.external.observability.observability_mock import ObservabilityMock

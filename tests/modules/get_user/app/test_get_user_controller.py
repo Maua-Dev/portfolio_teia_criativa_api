@@ -1,3 +1,5 @@
+import uuid
+
 from src.modules.get_user.app.get_user_controller import GetUserController
 from src.modules.get_user.app.get_user_usecase import GetUserUsecase
 from src.shared.helpers.external_interfaces.http_models import HttpRequest
@@ -13,16 +15,15 @@ class Test_GetUserController:
         controller = GetUserController(usecase=usecase, observability=observability)
 
         request = HttpRequest(query_params={
-            'user_id': str(repo.users[1].user_id)
+            'user_id': str(repo.users[1].id)
         })
 
         response = controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['user_id'] == repo.users[1].user_id
-        assert response.body['name'] == repo.users[1].name
         assert response.body['email'] == repo.users[1].email
-        assert response.body['state'] == repo.users[1].state.value
+        assert response.body['role'] == repo.users[1].role.value
+        assert response.body['message'] == "the user was retrieved successfully"
 
     def test_get_user_controller_missing_parameters(self):
         repo = UserRepositoryMock()
@@ -71,7 +72,7 @@ class Test_GetUserController:
         controller = GetUserController(usecase=usecase, observability=observability)
 
         request = HttpRequest(query_params={
-            'user_id': str(999)
+            'user_id': str(uuid.uuid4())
         })
 
         response = controller(request=request)

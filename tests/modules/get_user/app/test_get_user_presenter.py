@@ -2,17 +2,20 @@ import json
 from dataclasses import dataclass
 import pytest
 
+from src.modules.get_user.app import get_user_presenter as presenter_module
 from src.modules.get_user.app.get_user_presenter import lambda_handler
-
 
 class Test_GetUserPresenter:
 
     def test_get_user(self):
+
+        target_user = presenter_module.repo.users[0]
+
         event = {
             "version": "2.0",
             "routeKey": "$default",
             "rawPath": "/my/path",
-            "rawQueryString": "parameter1=value1&parameter1=value2&parameter2=value",
+            "rawQueryString": f"user_id={target_user.id}",
             "cookies": [
                 "cookie1",
                 "cookie2"
@@ -22,7 +25,7 @@ class Test_GetUserPresenter:
                 "header2": "value1,value2"
             },
             "queryStringParameters": {
-                "user_id": "1"
+                "user_id": str(target_user.id)
             },
             "requestContext": {
                 "accountId": "123456789012",
@@ -61,8 +64,9 @@ class Test_GetUserPresenter:
         }
 
         response = lambda_handler(event, None)
+
         assert response["statusCode"] == 200
-        assert json.loads(response["body"])["name"] == "Bruno Soller"
+        body = json.loads(response["body"])
         assert json.loads(response["body"])["email"] == "soller@soller.com"
-        assert json.loads(response["body"])["state"] == "APPROVED"
-        assert json.loads(response["body"])["user_id"] == 1
+        assert json.loads(response["body"])["role"] == target_user.role.value
+        assert json.loads(response["body"])["message"] == "the user was retrieved successfully"

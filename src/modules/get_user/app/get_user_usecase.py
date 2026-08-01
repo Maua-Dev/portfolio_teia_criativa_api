@@ -1,6 +1,9 @@
+import uuid
+
 from src.shared.domain.entities.user import User
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.helpers.errors.domain_errors import EntityError
+from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.infra.external.observability.observability_aws import ObservabilityAWS
 
 
@@ -13,6 +16,16 @@ class GetUserUsecase:
         self.observability.log_usecase_in()
         if type(user_id) != str:
             raise EntityError("user_id")
-        user = self.repo.get_user(user_id)
+
+        try:
+            parsed_id = uuid.UUID(user_id)
+        except ValueError:
+            raise EntityError("user_id"
+                              )
+        user = self.repo.get_user(uuid.UUID(user_id))
+
+        if user is None:
+            raise NoItemsFound("user_id")
+
         self.observability.log_usecase_out()
-        return user
+        return user    

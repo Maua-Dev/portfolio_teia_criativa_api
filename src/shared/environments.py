@@ -4,6 +4,7 @@ import os
 from src.shared.domain.observability.observability_interface import IObservability
 
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
+from src.shared.infra.external.dynamo.dynamo_keys import PK_ATTR, SK_ATTR
 
 
 class STAGE(Enum):
@@ -59,9 +60,9 @@ class Environments:
             self.region = os.environ.get("REGION")
             self.dynamo_table_name = os.environ.get("DYNAMO_TABLE_NAME")
             self.dynamo_partition_key = os.environ.get("DYNAMO_PARTITION_KEY")
-            self.dynamo_sort_key = os.environ.get("DYNAMO_SORT_KEY")
+            self.dynamo_sort_key = os.environ.get(PK_ATTR, "DYNAMO_SORT_KEY")
             # só setar se usar DynamoDB Local/compatível fora da AWS; em Lambda real fica None
-            self.dynamo_endpoint_url = os.environ.get("DYNAMO_ENDPOINT_URL")
+            self.dynamo_endpoint_url = os.environ.get(SK_ATTR, "DYNAMO_ENDPOINT_URL")
             self.s3_template_bucket1_name = os.environ.get("S3_TEMPLATE_BUCKET1_NAME")
 
     @staticmethod

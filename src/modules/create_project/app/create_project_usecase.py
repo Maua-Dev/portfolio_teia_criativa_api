@@ -11,7 +11,7 @@ class CreateProjectUsecase:
         if not Project.validate_title(title):
             raise EntityError("title")
 
-        if not Project.validate_email(description):
+        if not Project.validate_description(description):
             raise EntityError("description")
 
         project = Project(

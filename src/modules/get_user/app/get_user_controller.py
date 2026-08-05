@@ -20,24 +20,20 @@ class GetUserController:
     def __call__(self, request: IRequest) -> IResponse:
         try:
             self.observability.log_controller_in()
-            if request.data.get('user_id') is None:
+
+            user_id = request.data.get('user_id')
+            
+            if user_id is None:
                 raise MissingParameters('user_id')
 
-            if type(request.data.get('user_id')) != str:
+            if type(user_id) != str:
                 raise WrongTypeParameter(
                     fieldName="user_id",
                     fieldTypeExpected="str",
                     fieldTypeReceived=request.data.get('user_id').__class__.__name__
                 )
-
-            try:
-                user_id = uuid.UUID(request.data.get('user_id'))
-            except ValueError:
-                raise EntityError("user_id")
-
-
             user = self.GetUserUsecase(
-                user_id= str(user_id) 
+                user_id= user_id 
             )
 
             viewmodel = GetUserViewmodel(user)

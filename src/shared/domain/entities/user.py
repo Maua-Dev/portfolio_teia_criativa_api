@@ -6,7 +6,6 @@ from src.shared.domain.enums.role_enum import RoleEnum
 from src.shared.helpers.errors.domain_errors import EntityError
 
 
-
 class User(BaseModel):
     model_config = ConfigDict(frozen=True)
 
@@ -15,8 +14,7 @@ class User(BaseModel):
             super().__init__(**data)
         except ValidationError as err:
             raise EntityError(str(err.errors()[0]["loc"][0])) from err
- 
-    
+
     id: uuid.UUID = Field(
         default_factory=uuid.uuid4,
         description="Id unico do usuário"

@@ -2,12 +2,15 @@ import uuid
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
-
+from pydantic import ValidationError
+from src.shared.helpers.errors.domain_errors import EntityError
 
 class Project(BaseModel):
-    MIN_TITLE_LENGTH = 3
-    MIN_DESCRIPTION_LENGTH = 3
-
+    def __init__(self, **data):
+        try:
+            super().__init__(**data)
+        except ValidationError as err:
+            raise EntityError(str(err.errors()[0]["loc"][0])) from err
     id: uuid.UUID = Field(
         default_factory=uuid.uuid4,
         description="Id único do projeto"
@@ -32,28 +35,6 @@ class Project(BaseModel):
         default=None,
         description="URL ou path da imagem de exibição do projeto"
     )
-
-    @staticmethod
-    def validate_title(title: str) -> bool:
-        if title is None:
-            return False
-        elif type(title) != str:
-            return False
-        elif len(title) < Project.MIN_TITLE_LENGTH:
-            return False
-
-        return True
-
-    @staticmethod
-    def validate_description(description: str) -> bool:
-        if description is None:
-            return False
-        elif type(description) != str:
-            return False
-        elif len(description) < Project.MIN_DESCRIPTION_LENGTH:
-            return False
-
-        return True
 
     @field_validator("title")
     @classmethod

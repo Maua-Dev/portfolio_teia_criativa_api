@@ -8,12 +8,6 @@ class CreateProjectUsecase:
 
     def __call__(self, title: str, description: str) -> Project:
 
-        if not Project.validate_title(title):
-            raise EntityError("title")
-
-        if not Project.validate_description(description):
-            raise EntityError("description")
-
         project = Project(
             title=title,
             description=description,

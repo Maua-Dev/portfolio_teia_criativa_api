@@ -14,6 +14,19 @@ class CreateProjectController:
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
+
+            if request.data.get('title') is None:
+                raise MissingParameters('title')
+
+            if type(request.data.get('title')) != str:
+                raise WrongTypeParameter('title')
+            
+            if request.data.get('description') is None:
+                raise MissingParameters('description')
+
+            if type(request.data.get('description')) != str:
+                raise WrongTypeParameter('description')
+            
             project = self.CreateProjectUsecase(
                 title=request.data.get('title'),
                 description=request.data.get('description')

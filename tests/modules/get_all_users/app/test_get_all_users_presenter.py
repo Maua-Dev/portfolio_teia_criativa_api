@@ -1,5 +1,6 @@
 import json
 
+from src.shared.domain.enums.role_enum import RoleEnum
 from src.modules.get_all_users.app.get_all_users_presenter import lambda_handler
 
 
@@ -60,22 +61,16 @@ class Test_GetAllUsersPresenter:
         expected_body = {
             "all_users": [
                 {
-                    'user_id': 1,
-                    'name': "Bruno Soller",
                     'email': "soller@soller.com",
-                    'state': 'APPROVED',
+                    'role': RoleEnum.ADMIN.value,
                 },
                 {
-                    'user_id': 2,
-                    'name': "Vitor Brancas",
                     'email': "brancas@brancas.com",
-                    'state': 'REJECTED',
+                    'role': RoleEnum.USER.value,
                 },
                 {
-                    'user_id': 3,
-                    'name': "João Vilas",
                     'email': "bruno@bruno.com",
-                    'state': 'PENDING',
+                    'role': RoleEnum.ADMIN.value,
                 }
             ],
             "message": "all users has been retrieved"

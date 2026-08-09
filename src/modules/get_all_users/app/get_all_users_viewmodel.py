@@ -1,21 +1,17 @@
 from typing import List
 
 from src.shared.domain.entities.user import User
-
+from src.shared.domain.enums.role_enum import RoleEnum
 
 class UserViewmodel:
     def __init__(self, user: User):
-        self.state = user.state
+        self.role = user.role
         self.email = user.email
-        self.name = user.name
-        self.user_id = user.user_id
 
     def to_dict(self):
         return {
-            'user_id': self.user_id,
-            'name': self.name,
             'email': self.email,
-            'state': self.state.value
+            'role': self.role.value
         }
 
 

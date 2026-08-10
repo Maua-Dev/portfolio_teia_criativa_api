@@ -1,11 +1,16 @@
 import json
 
 from src.modules.delete_user.app.delete_user_presenter import lambda_handler
+from src.modules.delete_user.app.delete_user_presenter import lambda_handler, repo
 
 
 class Test_DeleteUserPresenter:
 
     def test_delete_user(self):
+
+        existing_user = repo.users[0]
+        existing_id = str(existing_user.id)
+
         event = {
             "version": "2.0",
             "routeKey": "$default",
@@ -52,7 +57,7 @@ class Test_DeleteUserPresenter:
                 "time": "12/Mar/2020:19:03:58 +0000",
                 "timeEpoch": 1583348638390
             },
-            "body": '{"user_id": "1"}',
+            "body": json.dumps({"user_id": existing_id}),
             "pathParameters": None,
             "isBase64Encoded": None,
             "stageVariables": None
@@ -60,10 +65,9 @@ class Test_DeleteUserPresenter:
 
         response = lambda_handler(event, None)
 
-        expected = {'user_id': 1,
-                     'name': 'Bruno Soller',
-                     'email': 'soller@soller.com',
-                     'state': 'APPROVED',
+        expected = {'user_id': existing_id,
+                     'email': existing_user.email,
+                     'role': existing_user.role.value,
                      'message': 'the user was deleted successfully'}
 
         assert json.loads(response["body"]) == expected

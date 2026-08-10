@@ -11,15 +11,15 @@ class UserRepositoryMock(IUserRepository):
 
     def __init__(self):
         self.users = [
-            User(email="soller@soller.com", id=uuid4()
+            User(email="soller@soller.com", id=str(uuid4())
                  , role=RoleEnum.ADMIN, senha_hash ="hash_fake_1"),
-            User(email="brancas@brancas.com", id=uuid4(), role=RoleEnum.USER, senha_hash ="hash_fake_2"),
-            User(email="bruno@bruno.com", id=uuid4(), role=RoleEnum.ADMIN, senha_hash ="hash_fake_3")
+            User(email="brancas@brancas.com", id=str(uuid4()), role=RoleEnum.USER, senha_hash ="hash_fake_2"),
+            User(email="bruno@bruno.com", id=str(uuid4()), role=RoleEnum.ADMIN, senha_hash ="hash_fake_3")
         ]
 
-    def get_user(self, id: UUID) -> User:
+    def get_user(self, id: str) -> User:
         for user in self.users:
-            if user.id == id:
+            if str(user.id) == str(id):
                 return user
         return None
 
@@ -30,16 +30,16 @@ class UserRepositoryMock(IUserRepository):
         self.users.append(new_user)
         return new_user
 
-    def delete_user(self, id: UUID) -> User:
+    def delete_user(self, id: str) -> User:
         for idx, user in enumerate(self.users):
-            if user.id == id:
+            if str(user.id) == str(id):
                 return self.users.pop(idx)
 
         return None
     
     def update_user(self, user: User) -> User:
         for idx, existing_user in enumerate(self.users):
-            if existing_user.id == user.id:
+            if str(existing_user.id) == str(user.id):
                 self.users[idx] = user
                 return user
         return None

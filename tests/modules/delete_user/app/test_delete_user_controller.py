@@ -3,6 +3,7 @@ from src.modules.delete_user.app.delete_user_usecase import DeleteUserUsecase
 from src.shared.helpers.external_interfaces.http_models import HttpRequest
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
+import uuid
 
 class Test_DeleteUserController:
     def test_delete_user_controller(self):
@@ -10,8 +11,10 @@ class Test_DeleteUserController:
             usecase = DeleteUserUsecase(repo=repo)
             controller = DeleteUserController(usecase=usecase)
 
+            existing_id =str(repo.users[0].id)
+
             request = HttpRequest(body={
-                'user_id': '1'
+                'user_id': existing_id
             })
 
             response = controller(request=request)
@@ -53,7 +56,7 @@ class Test_DeleteUserController:
             controller = DeleteUserController(usecase=usecase)
 
             request = HttpRequest(body={
-                'user_id': 2
+                'user_id': 67
             })
 
             response = controller(request=request)
@@ -67,7 +70,7 @@ class Test_DeleteUserController:
             controller = DeleteUserController(usecase=usecase)
 
             request = HttpRequest(body={
-                'user_id': '69'
+                'user_id': str(uuid.uuid4())
             })
 
             response = controller(request=request)

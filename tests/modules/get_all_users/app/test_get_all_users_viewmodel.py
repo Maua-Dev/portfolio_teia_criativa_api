@@ -1,4 +1,4 @@
-# TEMP: arquivo desabilitado — usa modelo antigo User (name/state/user_id)
+# TEMP: arquivo desabilitado — fora do escopo desta branch / incompatível com contrato atual
 # from src.modules.get_all_users.app.get_all_users_viewmodel import GetAllUsersViewmodel, UserViewmodel
 # from src.shared.domain.entities.user import User
 # from src.shared.domain.enums.state_enum import STATE

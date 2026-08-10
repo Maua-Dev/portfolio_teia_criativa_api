@@ -14,14 +14,14 @@ class CreateUserController:
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
+            if request.data.get('name') is None:
+                raise MissingParameters('name')
             if request.data.get('email') is None:
                 raise MissingParameters('email')
-            if request.data.get('senha_hash') is None:
-                raise MissingParameters('senha_hash')
 
             user = self.CreateUserUsecase(
-                email=request.data.get('email'),
-                senha_hash=request.data.get('senha_hash')
+                name=request.data.get('name'),
+                email=request.data.get('email')
             )
 
             viewmodel = CreateUserViewmodel(user)

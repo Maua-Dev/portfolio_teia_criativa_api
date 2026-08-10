@@ -12,9 +12,9 @@ class UserRepositoryMock(IUserRepository):
     def __init__(self):
         self.users = [
             User(email="soller@soller.com", id=uuid4()
-                 , role=RoleEnum.ADMIN, senha_hash ="hash_fake_super_segura_123456789"),
-            User(email="brancas@brancas.com", id=uuid4(), role=RoleEnum.USER, senha_hash ="hash_fake_super_segura_123456789"),
-            User(email="bruno@bruno.com", id=uuid4(), role=RoleEnum.ADMIN, senha_hash ="hash_fake_super_segura_123456789")
+                 , role=RoleEnum.ADMIN, senha_hash ="hash_fake_1"),
+            User(email="brancas@brancas.com", id=uuid4(), role=RoleEnum.USER, senha_hash ="hash_fake_2"),
+            User(email="bruno@bruno.com", id=uuid4(), role=RoleEnum.ADMIN, senha_hash ="hash_fake_3")
         ]
 
     def get_user(self, id: UUID) -> User:

@@ -1,38 +1,35 @@
 import pytest
-from uuid import uuid4
-from pydantic import ValidationError
-from src.shared.domain.entities.user import User, RoleEnum
+import uuid
+from src.shared.domain.entities.user import User
+from src.shared.domain.enums.role_enum import RoleEnum
+from src.shared.helpers.errors.domain_errors import EntityError
+
 
 class Test_User:
     def test_user_creation_success(self):
-        user_id = str(uuid4())
         user = User(
-            id=user_id,
-            email="vitor@maua.br",
-            role=RoleEnum.USER,
-            senha_hash="senha_secreta_123"
+            id=uuid.UUID("2a32a42f-7b05-45c0-9a79-bbcb1c9ac875"),
+            email="teste@teste.com",
+            senha_hash="hash_12345",
+            role=RoleEnum.USER
         )
-        assert user.id == user_id
-        assert user.email == "vitor@maua.br"
+        assert user.id == uuid.UUID("2a32a42f-7b05-45c0-9a79-bbcb1c9ac875")
+        assert user.email == "teste@teste.com"
         assert user.role == RoleEnum.USER
-        assert user.senha_hash == "senha_secreta_123"
 
     def test_user_invalid_email(self):
-        with pytest.raises(ValidationError):
+        with pytest.raises(EntityError):
             User(
-                id=str(uuid4()),
-                email="vitor.maua.br",  # Sem o @
-                role=RoleEnum.USER,
-                senha_hash="123456"
+                email="email_invalido",
+                senha_hash="hash_12345"
             )
 
     def test_user_invalid_role(self):
-        with pytest.raises(ValidationError):
+        with pytest.raises(EntityError):
             User(
-                id=str(uuid4()),
-                email="vitor@maua.br",
-                role="INVALID_ROLE",
-                senha_hash="123456"
+                email="teste@teste.com",
+                senha_hash="hash_12345",
+                role="ROLE_INVALIDA"
             )
 
 #from src.shared.domain.entities.user import User

@@ -7,15 +7,13 @@ from src.shared.domain.enums.role_enum import RoleEnum
 
 class Test_GetAllUsersViewmodel:
     all_users_list = [
-        User(user_id=1,
-             senha_hash=str(uuid.uuid4()),
-             name="Lucas Duez",
+        User(id=uuid.UUID("af852f40-0135-406d-b5d7-7ed5dce9bc8e"),
+             senha_hash="hash_fake_1",
              email="deuzexmachina@gmail.com",
              role=RoleEnum.ADMIN),
 
-        User(user_id=2,
-             senha_hash=str(uuid.uuid4()),
-             name="Laura Blablachan",
+        User(id=uuid.UUID("b9a52f40-0135-406d-b5d7-7ed5dce9bc8f"),
+             senha_hash="hash_fake_2",
              email="laurinha@gmail.com",
              role=RoleEnum.USER),
     ]
@@ -43,9 +41,8 @@ class Test_GetAllUsersViewmodel:
 
     def test_user_viewmodel(self):
         viewmodel = UserViewmodel(
-            User(user_id=2,
-                 senha_hash=str(uuid.uuid4()),
-                 name="Laura Blablachan",
+            User(id=uuid.UUID("b9a52f40-0135-406d-b5d7-7ed5dce9bc8f"),
+                 senha_hash="hash_fake_2",
                  email="laurinha@gmail.com",
                  role=RoleEnum.USER),
 )

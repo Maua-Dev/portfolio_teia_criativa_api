@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 import uuid
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.role_enum import RoleEnum
@@ -50,16 +50,9 @@ class UserRepositoryMock(IUserRepository):
                 return self.users.pop(idx)
         raise NoItemsFound("user_id")
 
-    def update_user(self, user: Optional[User] = None, **kwargs) -> User:
-        if user is not None:
-            for idx, u in enumerate(self.users):
-                if u.id == user.id:
-                    self.users[idx] = user
-                    return user
-            raise NoItemsFound("user_id")
-
-        target_id = kwargs.get("user_id") or kwargs.get("id")
-        for idx, u in enumerate(self.users):
-            if str(u.id) == str(target_id):
-                return u
+    def update_user(self, user: User) -> User:
+        for idx, existing_user in enumerate(self.users):
+            if existing_user.id == user.id:
+                self.users[idx] = user
+                return user
         raise NoItemsFound("user_id")

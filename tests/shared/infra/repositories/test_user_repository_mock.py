@@ -59,3 +59,15 @@ class Test_UserRepositoryMock:
         )
         user = repo.update_user(updated)
         assert user.email == "novo_email@soller.com"
+        assert repo.users[0].email == "novo_email@soller.com"
+
+    def test_update_user_not_found(self):
+        repo = UserRepositoryMock()
+        non_existent_user = User(
+            id=uuid.uuid4(),
+            email="yurialberto@yurialberto.com",
+            senha_hash="hash_fake_x",
+            role=RoleEnum.USER
+        )
+        with pytest.raises(NoItemsFound):
+            repo.update_user(non_existent_user)

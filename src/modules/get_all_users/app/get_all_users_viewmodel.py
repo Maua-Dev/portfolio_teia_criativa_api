@@ -1,36 +1,30 @@
 from typing import List
+
 from src.shared.domain.entities.user import User
-from src.shared.domain.enums.role_enum import RoleEnum
 
 
 class UserViewmodel:
-    id: str
-    email: str
-    role: RoleEnum
-
     def __init__(self, user: User):
-        self.id = str(user.id)
+        self.state = user.state
         self.email = user.email
-        self.role = user.role
+        self.name = user.name
+        self.user_id = user.user_id
 
-    def to_dict(self) -> dict:
+    def to_dict(self):
         return {
-            "id": self.id,
-            "email": self.email,
-            "role": self.role.value if hasattr(self.role, "value") else str(self.role),
+            'user_id': self.user_id,
+            'name': self.name,
+            'email': self.email,
+            'state': self.state.value
         }
 
 
-class GetAllUsersViewModel:
-    users: List[UserViewmodel]
+class GetAllUsersViewmodel:
+    def __init__(self, users_list: List[User]):
+        self.users_viewmodel_list = [UserViewmodel(user) for user in users_list]
 
-    def __init__(self, users: List[User]):
-        self.users = [UserViewmodel(user) for user in users]
-
-    def to_dict(self) -> dict:
+    def to_dict(self):
         return {
-            "users": [user.to_dict() for user in self.users],
-            "message": "the users were retrieved"
+            "all_users": [viewmodel.to_dict() for viewmodel in self.users_viewmodel_list],
+            "message": "all users has been retrieved"
         }
-
-GetAllUsersViewmodel = GetAllUsersViewModel

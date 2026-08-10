@@ -5,6 +5,7 @@ from src.shared.helpers.errors.controller_errors import MissingParameters, Wrong
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadRequest, InternalServerError, Created
+import uuid
 
 
 class CreateProjectController:
@@ -19,17 +20,58 @@ class CreateProjectController:
                 raise MissingParameters('title')
 
             if type(request.data.get('title')) != str:
-                raise WrongTypeParameter('title')
-            
+                raise WrongTypeParameter(
+                    fieldName='title',
+                    fieldTypeExpected='str',
+                    fieldTypeReceived=type(request.data.get('title')).__name__
+                )
+
             if request.data.get('description') is None:
                 raise MissingParameters('description')
 
             if type(request.data.get('description')) != str:
-                raise WrongTypeParameter('description')
+                raise WrongTypeParameter(
+                    fieldName='description',
+                    fieldTypeExpected='str',
+                    fieldTypeReceived=type(request.data.get('description')).__name__
+                )
+
+            if request.data.get('associates') is None:
+                pass
+            elif type(request.data.get('associates')) != list:
+                raise WrongTypeParameter(
+                    fieldName='associates',
+                    fieldTypeExpected='list',
+                    fieldTypeReceived=type(request.data.get('associates')).__name__
+                )
+            else:
+                for associate_id in request.data.get('associates'):
+                    if type(associate_id) != str:
+                        raise WrongTypeParameter(
+                            fieldName='associates',
+                            fieldTypeExpected='str',
+                            fieldTypeReceived=type(associate_id).__name__
+                        )
+                    try:
+                        uuid.UUID(associate_id)
+                    except ValueError:
+                        raise EntityError("associates")
+
+            if request.data.get('display_image') is None:
+                pass
+            elif type(request.data.get('display_image')) != str:
+                raise WrongTypeParameter(
+                    fieldName='display_image',
+                    fieldTypeExpected='str',
+                    fieldTypeReceived=type(request.data.get('display_image')).__name__
+                )
+
             
             project = self.CreateProjectUsecase(
                 title=request.data.get('title'),
-                description=request.data.get('description')
+                description=request.data.get('description'),
+                associates=request.data.get('associates', None),
+                display_image=request.data.get('display_image', None)
             )
 
             viewmodel = CreateProjectViewmodel(project)

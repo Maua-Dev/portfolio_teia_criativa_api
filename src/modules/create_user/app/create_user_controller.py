@@ -8,20 +8,27 @@ from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadR
 
 
 class CreateUserController:
-
     def __init__(self, usecase: CreateUserUsecase):
         self.CreateUserUsecase = usecase
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
-            if request.data.get('email') is None:
+            email = request.data.get('email', None)
+            senha_hash = request.data.get('senha_hash', None)
+
+            if email is None:
                 raise MissingParameters('email')
-            if request.data.get('senha_hash') is None:
+            if type(email) != str:
+                raise WrongTypeParameter('email')
+
+            if senha_hash is None:
                 raise MissingParameters('senha_hash')
+            if type(senha_hash) != str:
+                raise WrongTypeParameter('senha_hash')
 
             user = self.CreateUserUsecase(
-                email=request.data.get('email'),
-                senha_hash=request.data.get('senha_hash')
+                email=email,
+                senha_hash=senha_hash
             )
 
             viewmodel = CreateUserViewmodel(user)
@@ -29,21 +36,16 @@ class CreateUserController:
             return Created(viewmodel.to_dict())
 
         except NoItemsFound as err:
-
             return NotFound(body=err.message)
 
         except MissingParameters as err:
-
             return BadRequest(body=err.message)
 
         except WrongTypeParameter as err:
-
             return BadRequest(body=err.message)
 
         except EntityError as err:
-
             return BadRequest(body=err.message)
 
         except Exception as err:
-
             return InternalServerError(body=err.args[0])

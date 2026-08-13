@@ -19,12 +19,12 @@ class CreateUserController:
             if email is None:
                 raise MissingParameters('email')
             if type(email) != str:
-                raise WrongTypeParameter('email')
+                raise WrongTypeParameter(fieldName='email', fieldTypeExpected=str, fieldTypeReceived=type(email))
 
             if senha_hash is None:
                 raise MissingParameters('senha_hash')
             if type(senha_hash) != str:
-                raise WrongTypeParameter('senha_hash')
+                raise WrongTypeParameter(fieldName='senha_hash', fieldTypeExpected=str, fieldTypeReceived=type(senha_hash))
 
             user = self.CreateUserUsecase(
                 email=email,

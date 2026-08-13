@@ -4,7 +4,7 @@ from src.shared.helpers.external_interfaces.http_models import HttpRequest
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
 
-class Test_CreateUserControler:
+class Test_CreateUserController:
     def test_create_user_controller(self):
         repo = UserRepositoryMock()
         usecase = CreateUserUsecase(repo=repo)
@@ -28,7 +28,8 @@ class Test_CreateUserControler:
         controller = CreateUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'senha_hash': 'senha_hash_controller'})
+            'senha_hash': 'senha_hash_controller'
+        })
 
         response = controller(request=request)
 
@@ -48,6 +49,36 @@ class Test_CreateUserControler:
 
         assert response.status_code == 400
         assert response.body == "Field senha_hash is missing"
+
+    def test_create_user_controller_wrong_type_email(self):
+        repo = UserRepositoryMock()
+        usecase = CreateUserUsecase(repo=repo)
+        controller = CreateUserController(usecase=usecase)
+
+        request = HttpRequest(body={
+            'email': 12345,
+            'senha_hash': 'senha_hash_controller'
+        })
+
+        response = controller(request=request)
+
+        assert response.status_code == 400
+        assert "email" in response.body
+
+    def test_create_user_controller_wrong_type_senha_hash(self):
+        repo = UserRepositoryMock()
+        usecase = CreateUserUsecase(repo=repo)
+        controller = CreateUserController(usecase=usecase)
+
+        request = HttpRequest(body={
+            'email': 'teste_controller@teste.com',
+            'senha_hash': 12345
+        })
+
+        response = controller(request=request)
+
+        assert response.status_code == 400
+        assert "senha_hash" in response.body
 
     #def test_create_user_controller_invalid_email(self):
         #repo = UserRepositoryMock()

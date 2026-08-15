@@ -1,6 +1,6 @@
 import uuid
 import pytest
-from pydantic import ValidationError
+from src.shared.helpers.errors.domain_errors import EntityError
 
 from src.shared.domain.entities.project import Project
 
@@ -10,27 +10,27 @@ class Test_Project:
         Project(title="portfolio da teia", description="Site do grupo de estudos")
 
     def test_project_title_is_none(self):
-        with pytest.raises(ValidationError):
+        with pytest.raises(EntityError):
             Project(title=None, description="Site do grupo de estudos")
 
     def test_project_title_is_not_str(self):
-        with pytest.raises(ValidationError):
+        with pytest.raises(EntityError):
             Project(title=123, description="Site do grupo de estudos")
 
     def test_project_title_is_missing(self):
-        with pytest.raises(ValidationError):
+        with pytest.raises(EntityError):
             Project(description="Site do grupo de estudos")
 
     def test_project_description_is_none(self):
-        with pytest.raises(ValidationError):
+        with pytest.raises(EntityError):
             Project(title="Portfolio da teia", description=None)
 
     def test_project_description_is_missing(self):
-        with pytest.raises(ValidationError):
+        with pytest.raises(EntityError):
             Project(title="Portfolio da teia")
 
     def test_project_associates_is_not_uuid_list(self):
-        with pytest.raises(ValidationError):
+        with pytest.raises(EntityError):
             Project(
                 title="Portfolio da teia",
                 description="Site do grupo",
@@ -38,7 +38,7 @@ class Test_Project:
             )
 
     def test_project_display_image_is_not_str(self):
-        with pytest.raises(ValidationError):
+        with pytest.raises(EntityError):
             Project(
                 title="Portfolio da teia",
                 description="Site do grupo",
@@ -46,7 +46,7 @@ class Test_Project:
             )
 
     def test_project_extra_field_not_allowed(self):
-        with pytest.raises(ValidationError):
+        with pytest.raises(EntityError):
             Project(
                 title="Portfolio da teia",
                 description="Site do grupo",

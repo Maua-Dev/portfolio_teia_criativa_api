@@ -66,8 +66,8 @@ class Test_ProjectRepositoryMock:
 
         project = repo.update_project(projeto_atualizado)
 
-        assert project.title == "Teia Criativa"
-        assert repo.projects[0].title == "Teia Criativa"
+        assert project.title == "Teia criativa renovada"
+        assert repo.projects[0].title == "Teia criativa renovada"
 
     def test_update_project_not_found(self):
         repo = ProjectRepositoryMock()

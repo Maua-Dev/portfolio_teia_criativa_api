@@ -4,6 +4,7 @@ import os
 from src.shared.domain.observability.observability_interface import IObservability
 
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
+from src.shared.domain.repositories.project_repository_interface import IProjectRepository
 
 
 class STAGE(Enum):
@@ -96,6 +97,15 @@ class Environments:
             return ObservabilityAWS
         else:
             raise Exception("No observability class found for this stage")
+
+    @staticmethod
+    def get_project_repo() -> IProjectRepository:
+        if Environments.get_envs().stage == STAGE.TEST:
+            from src.shared.infra.repositories.project_repository_mock import ProjectRepositoryMock
+            return ProjectRepositoryMock
+        else:
+            raise Exception("No project repository found for this stage")
+
     @staticmethod
     def get_envs() -> "Environments":
         """

@@ -24,6 +24,14 @@ jobs:
           pip install -r iac/requirements-infra.txt
           npm install -g aws-cdk
 
+      # Em branches infra/<algo>, usa so o prefixo "infra" para nao quebrar nomes S3.
+      - name: Resolve STAGE
+        run: |
+          REF="${GITHUB_REF_NAME}"
+          STAGE="${REF%%/*}"
+          echo "STAGE=${STAGE}" >> "$GITHUB_ENV"
+          echo "Resolved STAGE=${STAGE} from GITHUB_REF_NAME=${REF}"
+
       - name: CDK synth
         working-directory: iac
         run: cdk synth
@@ -31,5 +39,4 @@ jobs:
           AWS_REGION: sa-east-1
           AWS_ACCOUNT_ID: "000000000000"
           STACK_NAME: PortfolioStackBackCi
-          GITHUB_REF_NAME: ci
           MSS_NAME: portfolio_teia_criativa_api

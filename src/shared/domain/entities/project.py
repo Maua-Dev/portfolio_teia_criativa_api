@@ -2,9 +2,15 @@ import uuid
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
-
+from pydantic import ValidationError
+from src.shared.helpers.errors.domain_errors import EntityError
 
 class Project(BaseModel):
+    def __init__(self, **data):
+        try:
+            super().__init__(**data)
+        except ValidationError as err:
+            raise EntityError(str(err.errors()[0]["loc"][0])) from err
     id: uuid.UUID = Field(
         default_factory=uuid.uuid4,
         description="Id único do projeto"

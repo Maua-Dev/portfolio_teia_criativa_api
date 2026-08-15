@@ -48,17 +48,3 @@ class DynamoConstruct(Construct):
                 point_in_time_recovery_enabled=(stage_lower == "prod")
             ),
         )
-
-        # GSI denso: buscar user por email (alinhado a dynamo_keys.GSI2_NAME)
-        self.portfolioTeiaCriativa_table.add_global_secondary_index(
-            index_name="UserEmailIndex",
-            partition_key=dynamodb.Attribute(
-                name="gsi2pk",
-                type=dynamodb.AttributeType.STRING,
-            ),
-            sort_key=dynamodb.Attribute(
-                name="gsi2sk",
-                type=dynamodb.AttributeType.STRING,
-            ),
-            projection_type=dynamodb.ProjectionType.ALL,
-        )

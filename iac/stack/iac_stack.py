@@ -33,9 +33,10 @@ class IacStack(Stack):
         )
         
         self.s3_construct = S3Construct(
-            self, 
-            construct_id=f"S3", 
-            stage=stage
+            self,
+            construct_id=f"S3",
+            stage=stage,
+            stack_name=stack_name,
         )
 
         self.dynamo_construct = DynamoConstruct(

@@ -9,6 +9,15 @@ class S3Construct(Construct):
     cloudfront_distribution_plans: cloudfront.Distribution
     cloudfront_distribution_subjects: cloudfront.Distribution
 
+    @staticmethod
+    def _build_bucket_name(stage: str, stack_name: str | None = None) -> str:
+        stage_value = stage.lower()
+        stack_suffix = (stack_name or "stack").lower().replace(" ", "-").replace("_", "-")
+
+        bucket_name = f"portfolio-teia-criativa-entity-assets-{stage_value}-{stack_suffix}"
+
+        return bucket_name[:63].rstrip("-")
+
     def _build_distribution(
         self,
         distribution_id: str,
@@ -83,17 +92,17 @@ class S3Construct(Construct):
 
         return bucket, distribution
 
-    def __init__(self, scope: Construct, construct_id: str, stage: str, **kwargs):
+    def __init__(self, scope: Construct, construct_id: str, stage: str, stack_name: str, **kwargs):
         super().__init__(scope, construct_id, **kwargs)
 
         self.stage = stage.lower()
         self.removal_policy = RemovalPolicy.RETAIN if stage.upper() == "PROD" else RemovalPolicy.DESTROY
 
-        identifier = f"2026-{Aws.ACCOUNT_ID}-{Aws.REGION}"
+        bucket_name = self._build_bucket_name(stage=self.stage, stack_name=stack_name)
 
         self.entity_assets_bucket, self.cloudfront_distribution_entity_assets = self.create_bucket_with_distribution(
             resource_prefix="EntityAssets",
-            bucket_name=f"portfolioTeiaCriativa-entity-assets-{self.stage}-{identifier}",
+            bucket_name=bucket_name,
             default_ttl=Duration.seconds(30),
             stage=stage,
         )

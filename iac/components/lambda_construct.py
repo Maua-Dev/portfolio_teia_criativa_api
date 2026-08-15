@@ -1,3 +1,5 @@
+import os
+
 from aws_cdk import (
     aws_lambda as lambda_,
     aws_s3 as s3,
@@ -73,12 +75,15 @@ class LambdaConstruct(Construct):
         self.stage = stage
         self.stack_name = stack_name
 
+        layer_asset_path = os.path.join(os.path.dirname(__file__), "..", "lambda_layer_out_temp")
+        if not os.path.exists(layer_asset_path):
+            layer_asset_path = os.path.join(os.path.dirname(__file__), "..", "build")
+
         self.lambda_layer = lambda_.LayerVersion(
-            self, 
+            self,
             id=f"{stack_name}_LambdaLayer_{stage}",
             layer_version_name=f"{stack_name}-LambdaLayer-{self.stage}",
-            # a pasta .build foi obtida do adjust layer directory, certifique-se de que a configuração da pasta layer gerada la esta igual
-            code=lambda_.Code.from_asset("./build"),
+            code=lambda_.Code.from_asset(layer_asset_path),
             compatible_runtimes=[lambda_.Runtime.PYTHON_3_13]
         )
         

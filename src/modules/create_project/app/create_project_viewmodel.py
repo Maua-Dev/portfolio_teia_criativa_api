@@ -7,7 +7,7 @@ class CreateProjectViewmodel:
     description: str
 
     def __init__(self, project: Project):
-        self.user_id = project.id
+        self.id = project.id
         self.title = project.title
         self.description = project.description
         self.associates = project.associates
@@ -15,10 +15,10 @@ class CreateProjectViewmodel:
 
     def to_dict(self):
         return {
-            'id': self.id,
+            'id': str(self.id),
             'title': self.title,
             'description': self.description,
-            'associates': self.associates,
+            'associates': [str(associate) for associate in self.associates] if self.associates else None,
             'display_image': self.display_image,
             'message': "the project was created successfully"
         }

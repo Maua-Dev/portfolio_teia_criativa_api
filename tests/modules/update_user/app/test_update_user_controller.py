@@ -65,7 +65,7 @@ class Test_UpdateUserController:
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == "Field user_id isn't in the right type.\n Received: int.\n Expected: str"
+        assert response.body == "The field 'user_id' has the wrong type. Received: 'int'. Expected: 'str'."
 
     def test_update_user_not_found(self):
         repo = UserRepositoryMock()

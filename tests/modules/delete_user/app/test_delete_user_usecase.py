@@ -31,4 +31,4 @@ class Test_DeleteUserUsecase:
         usecase = DeleteUserUsecase(repo)
 
         with pytest.raises(EntityError):
-            user = usecase(123)
+            user = usecase("123")

@@ -29,11 +29,6 @@ class DeleteUserController:
                     fieldTypeReceived=user_id.__class__.__name__
                 )
 
-            try:
-                uuid.UUID(user_id)
-            except ValueError:
-                raise EntityError("user_id")
-
             user = self.DeleteUserUsecase(
                 user_id=str(user_id)
             )

@@ -3,6 +3,8 @@ from src.shared.domain.repositories.user_repository_interface import IUserReposi
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
 
+import uuid
+
 
 class DeleteUserUsecase:
     def __init__(self, repo: IUserRepository):
@@ -10,8 +12,9 @@ class DeleteUserUsecase:
 
     def __call__(self, user_id: str) -> User:
 
-
-        if not isinstance(user_id, str):
+        try:
+            uuid.UUID(user_id)
+        except ValueError:
             raise EntityError("user_id")
 
         user = self.repo.delete_user(user_id)

@@ -3,7 +3,7 @@ import json
 from src.modules.create_project.app.create_project_presenter import lambda_handler
 
 
-class Test_CreateUserPresenter:
+class Test_CreateProjectPresenter:
 
     def test_create_project(self):
         event = {

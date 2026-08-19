@@ -8,13 +8,13 @@ class UpdateUserViewmodel:
     role: RoleEnum
 
     def __init__(self, user: User):
-        self.user_id = user.user_id
+        self.user_id = user.id
         self.email = user.email
         self.role = user.role
 
     def to_dict(self):
         return {
-            'user_id': self.user_id,
+            'user_id': str(self.user_id),
             'email': self.email,
             'role': self.role.value,
             'message': "the user was updated successfully"

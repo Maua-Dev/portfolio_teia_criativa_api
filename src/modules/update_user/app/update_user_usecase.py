@@ -14,10 +14,17 @@ class UpdateUserUsecase:
             uuid.UUID(user_id)
         except ValueError:
             raise EntityError("user_id")
-        
+
         if type(new_email) != str:
             raise EntityError("new_email")
 
-        updated_user = self.repo.update_user(user_id=user_id, new_email=new_email)
+        user = self.repo.get_user(user_id=uuid.UUID(user_id))
 
-        return updated_user
+        updated_user = User(
+            id=user.id,
+            email=new_email,
+            role=user.role,
+            senha_hash=user.senha_hash
+        )
+
+        return self.repo.update_user(user=updated_user)

@@ -1,68 +1,75 @@
-# TEMP: arquivo desabilitado — fora do escopo desta branch / incompatível com contrato atual
-# import json
+import json
 
-# from src.modules.update_user.app.update_user_presenter import lambda_handler
-
-
-# class Test_UpdateUserPresenter:
-#     pass  # TEMP: testes comentados por incompatibilidade com nova User
-
-#     # TEMP: desabilitado — incompatível com nova entidade User (id/email/role/senha_hash)
-# #     def test_update_user(self):
-# #         event = {
-# #             "version": "2.0",
-# #             "routeKey": "$default",
-# #             "rawPath": "/my/path",
-# #             "rawQueryString": "parameter1=value1&parameter1=value2&parameter2=value",
-# #             "cookies": [
-# #                 "cookie1",
-# #                 "cookie2"
-# #             ],
-# #             "headers": {
-# #                 "header1": "value1",
-# #                 "header2": "value1,value2"
-# #             },
-# #             "queryStringParameters": {
-# #                 "parameter1": "1"
-# #             },
-# #             "requestContext": {
-# #                 "accountId": "123456789012",
-# #                 "apiId": "<urlid>",
-# #                 "authentication": None,
-# #                 "authorizer": {
-# #                     "iam": {
-# #                         "accessKey": "AKIA...",
-# #                         "accountId": "111122223333",
-# #                         "callerId": "AIDA...",
-# #                         "cognitoIdentity": None,
-# #                         "principalOrgId": None,
-# #                         "userArn": "arn:aws:iam::111122223333:user/example-user",
-# #                         "userId": "AIDA..."
-# #                     }
-# #                 },
-# #                 "domainName": "<url-id>.lambda-url.us-west-2.on.aws",
-# #                 "domainPrefix": "<url-id>",
-# #                 "external_interfaces": {
-# #                     "method": "POST",
-# #                     "path": "/my/path",
-# #                     "protocol": "HTTP/1.1",
-# #                     "sourceIp": "123.123.123.123",
-# #                     "userAgent": "agent"
-# #                 },
-# #                 "requestId": "id",
-# #                 "routeKey": "$default",
-# #                 "stage": "$default",
-# #                 "time": "12/Mar/2020:19:03:58 +0000",
-# #                 "timeEpoch": 1583348638390
-# #             },
-# #             "body": '{"user_id": "1",  "new_name": "João Soller"}',
-# #             "pathParameters": None,
-# #             "isBase64Encoded": None,
-# #             "stageVariables": None
-# #         }
-
-# #         response = lambda_handler(event, None)
+from src.modules.update_user.app import update_user_presenter as presenter_module
+from src.modules.update_user.app.update_user_presenter import lambda_handler
 
 
-# #         assert response["statusCode"] == 200
-# #         assert json.loads(response["body"])['name'] == 'João Soller'
+class Test_UpdateUserPresenter:
+
+    def test_update_user(self):
+
+        target_user = presenter_module.repo.users[0]
+
+        event = {
+            "version": "2.0",
+            "routeKey": "$default",
+            "rawPath": "/my/path",
+            "rawQueryString": "parameter1=value1&parameter1=value2&parameter2=value",
+            "cookies": [
+                "cookie1",
+                "cookie2"
+            ],
+            "headers": {
+                "header1": "value1",
+                "header2": "value1,value2"
+            },
+            "queryStringParameters": {
+                "parameter1": "1"
+            },
+            "requestContext": {
+                "accountId": "123456789012",
+                "apiId": "<urlid>",
+                "authentication": None,
+                "authorizer": {
+                    "iam": {
+                        "accessKey": "AKIA...",
+                        "accountId": "111122223333",
+                        "callerId": "AIDA...",
+                        "cognitoIdentity": None,
+                        "principalOrgId": None,
+                        "userArn": "arn:aws:iam::111122223333:user/example-user",
+                        "userId": "AIDA..."
+                    }
+                },
+                "domainName": "<url-id>.lambda-url.us-west-2.on.aws",
+                "domainPrefix": "<url-id>",
+                "external_interfaces": {
+                    "method": "POST",
+                    "path": "/my/path",
+                    "protocol": "HTTP/1.1",
+                    "sourceIp": "123.123.123.123",
+                    "userAgent": "agent"
+                },
+                "requestId": "id",
+                "routeKey": "$default",
+                "stage": "$default",
+                "time": "12/Mar/2020:19:03:58 +0000",
+                "timeEpoch": 1583348638390
+            },
+            "body": json.dumps({
+                "user_id": str(target_user.id),
+                "new_email": "joao@devmaua.com.br"
+            }),
+            "pathParameters": None,
+            "isBase64Encoded": None,
+            "stageVariables": None
+        }
+
+        response = lambda_handler(event, None)
+
+        assert response["statusCode"] == 200
+        body = json.loads(response["body"])
+        assert body["user_id"] == str(target_user.id)
+        assert body["email"] == "joao@devmaua.com.br"
+        assert body["role"] == target_user.role.value
+        assert body["message"] == "the user was updated successfully"

@@ -5,6 +5,7 @@ from src.shared.helpers.errors.controller_errors import MissingParameters, Wrong
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadRequest, InternalServerError
+from pydantic import EmailStr, TypeAdapter, ValidationError
 
 
 class UpdateUserController:
@@ -13,20 +14,42 @@ class UpdateUserController:
         self.UpdateUserUsecase = usecase
 
     def __call__(self, request: IRequest) -> IResponse:
-        try:
-            if request.data.get('user_id') is None:
-                raise MissingParameters('user_id')
-            if request.data.get('new_name') is None:
-                raise MissingParameters('new_name')
 
-            if type(request.data.get('user_id')) != str:
+        new_email = request.data.get('new_email')
+        user_id = request.data.get('user_id')
+
+        try:
+            if user_id is None:
+                raise MissingParameters('user_id')
+            if new_email is None:
+                raise MissingParameters('new_email')
+
+            if type(user_id) != str:
                 raise WrongTypeParameter(
                     fieldName="user_id",
                     fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('user_id').__class__.__name__
+                    fieldTypeReceived=user_id.__class__.__name__
                 )
 
-            user = self.UpdateUserUsecase(user_id=int(request.data.get('user_id')), new_name=request.data.get('new_name'))
+            if type(new_email) != str:
+                raise WrongTypeParameter(
+                    fieldName="new_email",
+                    fieldTypeExpected="str",
+                    fieldTypeReceived=new_email.__class__.__name__
+                )
+
+            email_adapter = TypeAdapter(EmailStr)
+
+            try: 
+                email_adapter.validate_python(new_email)
+            except ValidationError:
+                raise WrongTypeParameter(
+                    fieldName="new_email",
+                    fieldTypeExpected="valid email",
+                    fieldTypeReceived=new_email
+                )
+
+            user = self.UpdateUserUsecase(user_id=str(user_id), new_email=new_email)
 
             viewmodel = UpdateUserViewmodel(user=user)
 

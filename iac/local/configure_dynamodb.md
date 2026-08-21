@@ -38,7 +38,7 @@ Next, you need to configure DynamoDB for your project and Docker compose. Follow
 ```
     cd iac
     cd local
-    docker-compose up -d
+    docker compose up -d
 ```
 
 ### Create virtual enviroments in python (once for project)

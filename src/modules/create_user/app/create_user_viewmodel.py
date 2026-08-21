@@ -1,24 +1,22 @@
 from src.shared.domain.entities.user import User
-from src.shared.domain.enums.state_enum import STATE
+from src.shared.domain.enums.role_enum import RoleEnum
 
 
 class CreateUserViewmodel:
-    user_id: int
+    id: str
     name: str
     email: str
-    state: STATE
+    role: RoleEnum
 
     def __init__(self, user: User):
-        self.user_id = user.user_id
-        self.name = user.name
+        self.id = str(user.id)
         self.email = user.email
-        self.state = user.state
+        self.role = user.role
 
     def to_dict(self):
         return {
-            'user_id': self.user_id,
-            'name': self.name,
+            'id': self.id,
             'email': self.email,
-            'state': self.state.value,
+            'role': self.role.value,
             'message': "the user was created successfully"
         }

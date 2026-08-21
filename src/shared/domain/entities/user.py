@@ -1,21 +1,20 @@
 from enum import Enum
 from uuid import UUID, uuid4
 import uuid
-from pydantic import BaseModel, EmailStr, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, ValidationError
 from src.shared.domain.enums.role_enum import RoleEnum
 from src.shared.helpers.errors.domain_errors import EntityError
 
 
-
 class User(BaseModel):
-    
+    model_config = ConfigDict(frozen=True)
+
     def __init__(self, **data):
         try:
             super().__init__(**data)
         except ValidationError as err:
             raise EntityError(str(err.errors()[0]["loc"][0])) from err
- 
-    
+
     id: uuid.UUID = Field(
         default_factory=uuid.uuid4,
         description="Id unico do usuário"
@@ -32,6 +31,3 @@ class User(BaseModel):
         ...,
         description="Hash da senha do usuário"
     )
-
-    class Config:
-        frozen = True

@@ -3,30 +3,25 @@ import pytest
 from src.modules.create_user.app.create_user_usecase import CreateUserUsecase
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
-
+from src.shared.domain.enums.role_enum import RoleEnum
 
 class Test_CreateUserUsecase:
 
-    def test_create_user(self):
+    def test_create_user_usecase(self):
         repo = UserRepositoryMock()
-        usecase = CreateUserUsecase(repo)
+        usecase = CreateUserUsecase(repo=repo)
 
-        user = usecase(name="Vitor Choueri", email="branco@branco.branco")
+        user = usecase(email="novo_user@teste.com", senha_hash="senha_hash_123")
 
-        assert repo.users[-1] == user
+        assert user.email == "novo_user@teste.com"
+        assert user.role == RoleEnum.USER
+        assert user.senha_hash == "senha_hash_123"
 
-    def test_create_user_invalid_name(self):
+    def test_create_user_usecase_invalid_email(self):
         repo = UserRepositoryMock()
-        usecase = CreateUserUsecase(repo)
+        usecase = CreateUserUsecase(repo=repo)
 
         with pytest.raises(EntityError):
-            user = usecase(name="V", email="branco@branco.branco")
-
-    def test_create_user_invalid_email(self):
-        repo = UserRepositoryMock()
-        usecase = CreateUserUsecase(repo)
-
-        with pytest.raises(EntityError):
-            user = usecase(name="Vitor Choueri", email="branco@brancobranco")
+            usecase(email="email_invalido_sem_arroba", senha_hash="hash_senha_123")
 
 

@@ -46,9 +46,15 @@ class IacStack(Stack):
             stage=stage,
         )
 
+        # alinhado com Environments.load_envs() (stages DEV/HOMOLOG/PROD)
         ENVIRONMENT_VARIABLES = {
+            "STAGE": stage.upper(),
+            "REGION": self.region,
+            "DYNAMO_TABLE_NAME": self.dynamo_construct.portfolioTeiaCriativa_table.table_name,
+            "DYNAMO_PARTITION_KEY": "pk",
+            "DYNAMO_SORT_KEY": "sk",
+            "MSS_NAME": stack_name,
             "ENTITY_ASSETS_BUCKET_NAME": self.s3_construct.entity_assets_bucket.bucket_name,
-            "PORTFOLIOTEIA_TABLE_NAME": self.dynamo_construct.portfolioTeiaCriativa_table.table_name,
         }
 
         self.lambda_construct = LambdaConstruct(
@@ -59,10 +65,10 @@ class IacStack(Stack):
             stack_name=stack_name,
             environment_variables=ENVIRONMENT_VARIABLES
         )
-        
+
         for function in self.lambda_construct.funtions_that_need_dynamo_db_access:
-            self.dynamo_construct.academic_catalog_table.grant_read_write_data(function)
-            
+            self.dynamo_construct.portfolioTeiaCriativa_table.grant_read_write_data(function)
+
         for function in self.lambda_construct.functions_that_need_s3_access:
             self.s3_construct.entity_assets_bucket.grant_read_write(function)
        

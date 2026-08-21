@@ -72,26 +72,50 @@ Create a file named `.env` in the root directory and add the following line to t
     STAGE=TEST
 ```
 
-## Launch DynamoDB in Docker
+## Launch DynamoDB in Docker 
 
 Start the DynamoDB Local container using Docker:
 
 1. Open Docker
 2. Start dynamodb-local container
 
-## Running the `load_user_mock_to_dynamo` Script
+## Running the seed scripts
 
-Seed mock `User` data into DynamoDB Local (creates the table if missing, then loads mock users):
+Seed mock data into DynamoDB after the Dynamo repositories exist. Two targets:
+
+### Local (DynamoDB Local / Docker)
+
+Creates the table (pk/sk) if missing, then loads mock data:
 
 ```bash
 # from repo root, with STAGE=TEST (default)
 python -m src.shared.infra.repositories.load_user_mock_to_dynamo
+python -m src.shared.infra.repositories.load_project_mock_to_dynamo
+# or explicitly:
+python -m src.shared.infra.repositories.load_user_mock_to_dynamo --target local
+python -m src.shared.infra.repositories.load_project_mock_to_dynamo --target local
 ```
 
-The script file lives at:
+### AWS DEV / HOMOLOG (manual, after CDK deploy)
+
+Does **not** create the table — CDK already did. Only seeds data. Refuses `PROD`.
+
+```bash
+STAGE=DEV \
+REGION=sa-east-1 \
+DYNAMO_TABLE_NAME=PortfolioTeiaCriativaTable-dev \
+DYNAMO_PARTITION_KEY=pk \
+DYNAMO_SORT_KEY=sk \
+python -m src.shared.infra.repositories.load_user_mock_to_dynamo --target aws
+```
+
+Use your real table name / region from the deployed stack. Do not run this against production.
+
+Scripts live at:
 
 ```bash
 src/shared/infra/repositories/load_user_mock_to_dynamo.py
+src/shared/infra/repositories/load_project_mock_to_dynamo.py
 ```
 
 ## Launch NoSQL WorkBench

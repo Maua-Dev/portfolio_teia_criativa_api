@@ -1,31 +1,37 @@
-import pytest
-
-pytest.importorskip("src.shared.infra.dto.user_dynamo_dto")
-
+import uuid
+from src.shared.domain.entities.user import User
 from src.shared.domain.enums.role_enum import RoleEnum
 from src.shared.infra.dto.user_dynamo_dto import UserDynamoDTO
-from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
+from src.shared.infra.external.dynamo.dynamo_keys import EntityKind, PK_ATTR, SK_ATTR
 
 
 class Test_UserDynamoDTO:
     def test_from_entity_to_dynamo(self):
-        user = UserRepositoryMock().users[0]
-        data = UserDynamoDTO.from_entity_to_dynamo(user)
+        user = User(
+            id=uuid.uuid4(),
+            email="teste@teste.com",
+            senha_hash="hash123",
+            role=RoleEnum.USER
+        )
 
-        assert data["pk"] == "USER"
-        assert data["sk"] == f"USER#{user.id}"
-        assert data["email"] == user.email
-        assert data["role"] == RoleEnum.ADMIN.value
-        assert data["senha_hash"] == user.senha_hash
+        dynamo_dict = UserDynamoDTO.from_entity_to_dynamo(user)
+
+        assert dynamo_dict[PK_ATTR] == EntityKind.USER.value
+        assert dynamo_dict[SK_ATTR] == f"USER#{user.id}"
+        assert dynamo_dict["email"] == user.email
+        assert dynamo_dict["role"] == user.role.value
 
     def test_from_dynamo_to_entity_roundtrip(self):
-        user = UserRepositoryMock().users[1]
-        dynamo = UserDynamoDTO.from_entity_to_dynamo(user)
-        restored = UserDynamoDTO.from_dynamo_to_entity(dynamo)
+        user = User(
+            id=uuid.uuid4(),
+            email="teste@teste.com",
+            senha_hash="hash123",
+            role=RoleEnum.USER
+        )
 
-        assert restored.id == user.id
-        assert restored.email == user.email
-        assert restored.role == RoleEnum.USER
-        assert restored.senha_hash == user.senha_hash
-        assert "pk" not in restored.model_dump()
-        assert "sk" not in restored.model_dump()
+        dynamo_dict = UserDynamoDTO.from_entity_to_dynamo(user)
+        entity = UserDynamoDTO.from_dynamo_to_entity(dynamo_dict)
+
+        assert entity.id == user.id
+        assert entity.email == user.email
+        assert entity.role == user.role

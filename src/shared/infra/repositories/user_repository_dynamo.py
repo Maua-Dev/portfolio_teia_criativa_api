@@ -1,13 +1,12 @@
 from typing import List
-
 import uuid
 
 from boto3.dynamodb.conditions import Key
 from src.shared.domain.entities.user import User
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.environments import Environments
-from src.shared.helpers.errors.usecase_errors import DuplicatedUser, NoUsersFound
-from src.shared.infra.dto.template_dynamo_dto import ItemDynamoDTO
+from src.shared.helpers.errors.usecase_errors import DuplicatedItem, NoItemsFound
+from src.shared.infra.dto.user_dynamo_dto import UserDynamoDTO
 from src.shared.infra.external.dynamo.datasources.dynamo_datasource import DynamoDatasource
 
 from src.shared.infra.external.dynamo.dynamo_keys import (
@@ -19,7 +18,7 @@ from src.shared.infra.external.dynamo.dynamo_keys import (
 )
 
 
-class TemplateRepositoryDynamo(IUserRepository):
+class UserRepositoryDynamo(IUserRepository):
 
     def __init__(self):
         envs = Environments.get_envs()
@@ -32,70 +31,71 @@ class TemplateRepositoryDynamo(IUserRepository):
         )
 
     def _pk(self) -> str:
-        return partition_key(kind=EntityKind.User)
+        return partition_key(kind=EntityKind.USER)
 
-    def _sk(self, user_id: UUID) -> str:
-        return sort_key(id=uuid.UUID(user_id), kind=EntityKind.User)
+    def _sk(self, user_id: uuid.UUID) -> str:
+        return sort_key(id=user_id, kind=EntityKind.USER)
 
-    def get_user(self, user_id: UUID) -> User:
-        resp = self.dynamo.get_user(
+    def get_user(self, user_id: uuid.UUID) -> User:
+        resp = self.dynamo.get_item(
             partition_key=self._pk(),
             sort_key=self._sk(user_id),
         )
 
-        if resp.get("User") is None:
-            raise NoUsersFound(user_id)
+        if "Item" not in resp:
+            raise NoItemsFound("user_id")
 
-        return ItemDynamoDTO.from_dynamo_to_entity(resp[User])
+        return UserDynamoDTO.from_dynamo_to_entity(resp["Item"])
 
-    def get_all_User(self) -> List[User]:
+    def get_all_user(self) -> List[User]:
         resp = self.dynamo.query(
             key_condition_expression=Key(PK_ATTR).eq(self._pk()),
         )
 
         return [
-            UserDynamoDTO.from_dynamo_to_entity(User)
-            for User in resp.get("Users", [])
+            UserDynamoDTO.from_dynamo_to_entity(item)
+            for item in resp.get("Items", [])
         ]
 
-    def create_User(self, new_User: User) -> User:
-        existing = self.dynamo.get_User(
+    def create_user(self, new_user: User) -> User:
+        existing = self.dynamo.get_item(
             partition_key=self._pk(),
-            sort_key=self._sk(new_User.User_id),
+            sort_key=self._sk(new_user.id),
         )
-        if existing.get("User") is not None:
-            raise DuplicatedUser("User_id")
+        if "Item" in existing:
+            raise DuplicatedItem("user_id")
 
-        self.dynamo.put_User(
-            User=UserDynamoDTO.from_entity_to_dynamo(new_User),
+        item_to_put = UserDynamoDTO.from_entity_to_dynamo(new_user)
+        self.dynamo.put_item(
+            item=item_to_put,
             partition_key=self._pk(),
-            sort_key=self._sk(new_User.User_id),
+            sort_key=self._sk(new_user.id),
         )
-        return new_User
+        return new_user
 
-    def delete_User(self, User_id: UUID) -> User:
-        resp = self.dynamo.delete_User(
+    def delete_user(self, user_id: uuid.UUID) -> User:
+        resp = self.dynamo.delete_item(
             partition_key=self._pk(),
-            sort_key=self._sk(User_id),
+            sort_key=self._sk(user_id),
         )
 
         if "Attributes" not in resp:
-            raise NoUsersFound("User_id")
+            raise NoItemsFound("user_id")
 
         return UserDynamoDTO.from_dynamo_to_entity(resp["Attributes"])
 
-    def update_User(self, updated_User: User) -> User:
-        existing = self.dynamo.get_User(
+    def update_user(self, updated_user: User) -> User:
+        existing = self.dynamo.get_item(
             partition_key=self._pk(),
-            sort_key=self._sk(updated_User.User_id),
+            sort_key=self._sk(updated_user.id),
         )
-        if existing.get("User") is None:
-            raise NoUsersFound("User_id")
+        if "Item" not in existing:
+            raise NoItemsFound("user_id")
 
-        self.dynamo.put_User(
-            User=UserDynamoDTO.from_entity_to_dynamo(updated_User),
+        item_to_put = UserDynamoDTO.from_entity_to_dynamo(updated_user)
+        self.dynamo.put_item(
+            item=item_to_put,
             partition_key=self._pk(),
-            sort_key=self._sk(updated_User.User_id),
+            sort_key=self._sk(updated_user.id),
         )
-        return updated_User
-    
+        return updated_user

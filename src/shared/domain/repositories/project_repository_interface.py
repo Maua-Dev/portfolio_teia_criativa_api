@@ -25,3 +25,7 @@ class IProjectRepository(ABC):
     @abstractmethod
     def delete_project(self, project_id: uuid.UUID) -> bool:
         pass
+
+    @abstractmethod
+    def get_project_counter(self) -> int:
+        pass

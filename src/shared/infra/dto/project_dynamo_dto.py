@@ -7,14 +7,14 @@ class ProjectDynamoDTO:
     description: str
     associates: list[uuid.UUID]
     display_image: str
-    project_id: uuid.UUID
+    id: uuid.UUID
 
-    def __init__(self, title: str, description: str, associates: list[uuid.UUID], display_image: str, project_id: uuid.UUID):
+    def __init__(self, title: str, description: str, associates: list[uuid.UUID], display_image: str, id: uuid.UUID):
         self.title = title
         self.description = description
         self.associates = associates
         self.display_image = display_image
-        self.project_id = project_id
+        self.id = id
 
     @staticmethod
     def from_entity(project: Project) -> "ProjectDynamoDTO":
@@ -26,7 +26,7 @@ class ProjectDynamoDTO:
             description=project.description,
             associates=project.associates,
             display_image=project.display_image,
-            project_id=project.project_id
+            id=project.id
         )
 
     def to_dynamo(self) -> dict:
@@ -37,9 +37,9 @@ class ProjectDynamoDTO:
             "entity": "project",
             "title": self.title,
             "description": self.description,
-            "associates": [str(associate) for associate in self.associates],
+            "associates": [str(associate) for associate in self.associates] if self.associates else [],
             "display_image": self.display_image,
-            "project_id": str(self.project_id),
+            "id": str(self.id),
         }
 
     @staticmethod
@@ -48,12 +48,13 @@ class ProjectDynamoDTO:
         Parse data from DynamoDB to ProjectDynamoDTO
         @param project_data: dict from DynamoDB
         """
+        associates = project_data.get("associates")
         return ProjectDynamoDTO(
             title=project_data["title"],
             description=project_data["description"],
-            associates=[uuid.UUID(associate) for associate in project_data["associates"]],
-            display_image=project_data["display_image"],
-            project_id=uuid.UUID(project_data["project_id"])
+            associates=[uuid.UUID(associate) for associate in associates] if associates else None,
+            display_image=project_data.get("display_image"),
+            id=uuid.UUID(project_data["id"])
         )
 
     def to_entity(self) -> Project:
@@ -65,11 +66,11 @@ class ProjectDynamoDTO:
             description=self.description,
             associates=self.associates,
             display_image=self.display_image,
-            project_id=self.project_id
+            id=self.id
         )
 
     def __repr__(self):
-        return f"ProjectDynamoDto(title={self.title}, description={self.description}, associates={self.associates}, display_image={self.display_image}, project_id={self.project_id})"
+        return f"ProjectDynamoDto(title={self.title}, description={self.description}, associates={self.associates}, display_image={self.display_image}, id={self.id})"
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__

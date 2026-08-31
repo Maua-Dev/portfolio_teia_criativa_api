@@ -113,15 +113,11 @@ class LambdaConstruct(Construct):
         self.stack_name = stack_name
         self._public_resource = None
 
-        layer_asset_path = os.path.join(os.path.dirname(__file__), "..", "lambda_layer_out_temp")
-        if not os.path.exists(layer_asset_path):
-            layer_asset_path = os.path.join(os.path.dirname(__file__), "..", "build")
-
         self.lambda_layer = lambda_.LayerVersion(
             self,
             id=f"{stack_name}_LambdaLayer_{stage}",
             layer_version_name=f"{stack_name}-LambdaLayer-{self.stage}",
-            code=lambda_.Code.from_asset(layer_asset_path),
+            code=lambda_.Code.from_asset("./build"),
             compatible_runtimes=[lambda_.Runtime.PYTHON_3_13]
         )
 

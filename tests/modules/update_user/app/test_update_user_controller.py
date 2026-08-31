@@ -1,86 +1,104 @@
-# TEMP: arquivo desabilitado — fora do escopo desta branch / incompatível com contrato atual
-# from src.modules.update_user.app.update_user_controller import UpdateUserController
-# from src.modules.update_user.app.update_user_usecase import UpdateUserUsecase
-# from src.shared.helpers.external_interfaces.http_models import HttpRequest
-# from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
+#TEMP: arquivo desabilitado — fora do escopo desta branch / incompatível com contrato atual
+from src.modules.update_user.app.update_user_controller import UpdateUserController
+from src.modules.update_user.app.update_user_usecase import UpdateUserUsecase
+from src.shared.helpers.external_interfaces.http_models import HttpRequest
+from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
+
+import uuid
 
 
-# class Test_UpdateUserController:
-#     # TEMP: desabilitado — incompatível com nova entidade User (id/email/role/senha_hash)
-# #     def test_update_user_controller(self):
-# #         repo = UserRepositoryMock()
-# #         usecase = UpdateUserUsecase(repo=repo)
-# #         controller = UpdateUserController(usecase=usecase)
+class Test_UpdateUserController:
+    #TEMP: desabilitado — incompatível com nova entidade User (id/email/role/senha_hash)
+    def test_update_user_controller(self):
+        repo = UserRepositoryMock()
+        usecase = UpdateUserUsecase(repo=repo)
+        controller = UpdateUserController(usecase=usecase)
 
-# #         request = HttpRequest(body={
-# #             'user_id': "1",
-# #             'new_name': 'Branco do Branco Branco da Silva'
-# #         })
+        existing_user_id = str(repo.users[0].id)
 
-# #         response = controller(request=request)
+        request = HttpRequest(body={
+            'user_id': existing_user_id,
+            'new_email': 'testeemail@devmaua.com.br'
+        })
 
-# #         assert response.status_code == 200
-# #         assert response.body['user_id'] == repo.users[0].user_id
-# #         assert response.body['name'] == 'Branco do Branco Branco da Silva'
-# #         assert response.body['email'] == repo.users[0].email
-# #         assert response.body['state'] == repo.users[0].state.value
-# #         assert response.body['message'] == "the user was updated successfully"
+        response = controller(request=request)
 
-#     def test_update_user_controller_missing_user_id(self):
-#         repo = UserRepositoryMock()
-#         usecase = UpdateUserUsecase(repo=repo)
-#         controller = UpdateUserController(usecase=usecase)
+        assert response.status_code == 200
+        assert response.body['user_id'] == existing_user_id
+        assert response.body['email'] == 'testeemail@devmaua.com.br'
+        assert response.body['role'] == repo.users[0].role.value
+        assert response.body['message'] == "the user was updated successfully"
 
-#         request = HttpRequest(body={
-#             'new_name': 'Branco do Branco Branco da Silva'
-#         })
+    def test_update_user_controller_missing_user_id(self):
+        repo = UserRepositoryMock()
+        usecase = UpdateUserUsecase(repo=repo)
+        controller = UpdateUserController(usecase=usecase)
 
-#         response = controller(request=request)
+        request = HttpRequest(body={
+            'new_email': 'testeemail@devmaua.com.br'
+        })
 
-#         assert response.status_code == 400
-#         assert response.body == "Field user_id is missing"
+        response = controller(request=request)
 
-#     def test_update_user_controller_missing_new_name(self):
-#         repo = UserRepositoryMock()
-#         usecase = UpdateUserUsecase(repo=repo)
-#         controller = UpdateUserController(usecase=usecase)
+        assert response.status_code == 400
+        assert response.body == "Field user_id is missing"
 
-#         request = HttpRequest(body={
-#             'user_id': "1"
-#         })
+    def test_update_user_controller_missing_new_email(self):
+        repo = UserRepositoryMock()
+        usecase = UpdateUserUsecase(repo=repo)
+        controller = UpdateUserController(usecase=usecase)
 
-#         response = controller(request=request)
+        request = HttpRequest(body={
+            'user_id': str(uuid.uuid4())
+        })
 
-#         assert response.status_code == 400
-#         assert response.body == "Field new_name is missing"
+        response = controller(request=request)
 
-#     def test_update_user_controller_invalid_user_id(self):
-#         repo = UserRepositoryMock()
-#         usecase = UpdateUserUsecase(repo=repo)
-#         controller = UpdateUserController(usecase=usecase)
+        assert response.status_code == 400
+        assert response.body == "Field new_email is missing"
 
-#         request = HttpRequest(body={
-#             'user_id': 3,
-#             'new_name': 'Branco do Branco Branco da Silva'
-#         })
+    def test_update_user_controller_invalid_user_id(self):
+        repo = UserRepositoryMock()
+        usecase = UpdateUserUsecase(repo=repo)
+        controller = UpdateUserController(usecase=usecase)
 
-#         response = controller(request=request)
+        request = HttpRequest(body={
+            'user_id': 3,
+            'new_email': 'testeemail@devmaua.com.br'
+        })
 
-#         assert response.status_code == 400
-#         assert response.body == "Field user_id isn't in the right type.\n Received: int.\n Expected: str"
+        response = controller(request=request)
 
-#     # TEMP: desabilitado — incompatível com nova entidade User (id/email/role/senha_hash)
-# #     def test_update_user_not_found(self):
-# #         repo = UserRepositoryMock()
-# #         usecase = UpdateUserUsecase(repo=repo)
-# #         controller = UpdateUserController(usecase=usecase)
+        assert response.status_code == 400
+        assert response.body == "The field 'user_id' has the wrong type. Received: 'int'. Expected: 'str'."
 
-# #         request = HttpRequest(body={
-# #             'user_id': "69",
-# #             'new_name': 'Branco do Branco Branco da Silva'
-# #         })
+    def test_update_user_controller_invalid_email(self):
+        repo = UserRepositoryMock()
+        usecase = UpdateUserUsecase(repo=repo)
+        controller = UpdateUserController(usecase=usecase)
 
-# #         response = controller(request=request)
+        request = HttpRequest(body={
+            'user_id': str(uuid.uuid4()),
+            'new_email': 'email_invalido'
+        })
 
-# #         assert response.status_code == 404
-# #         assert response.body == 'No items found for user_id'
+        response = controller(request=request)
+
+        assert response.status_code == 400
+        assert response.body == "The field 'new_email' has the wrong type. Received: 'email_invalido'. Expected: 'valid email'."
+
+    #TEMP: desabilitado — incompatível com nova entidade User (id/email/role/senha_hash)
+    def test_update_user_not_found(self):
+        repo = UserRepositoryMock()
+        usecase = UpdateUserUsecase(repo=repo)
+        controller = UpdateUserController(usecase=usecase)
+
+        request = HttpRequest(body={
+            'user_id': str(uuid.uuid4()),
+            'new_email': 'testeemail@devmaua.com.br'
+        })
+
+        response = controller(request=request)
+
+        assert response.status_code == 404
+        assert response.body == 'No items found for user_id'

@@ -1,26 +1,39 @@
 from typing import List
-
+import uuid
 from src.shared.domain.entities.user import User
-from src.shared.domain.enums.state_enum import STATE
+from src.shared.domain.enums.role_enum import RoleEnum
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
 
 
 class UserRepositoryMock(IUserRepository):
     users: List[User]
-    user_counter: int
 
     def __init__(self):
         self.users = [
-            User(name="Bruno Soller", email="soller@soller.com", user_id=1, state=STATE.APPROVED),
-            User(name="Vitor Brancas", email="brancas@brancas.com", user_id=2, state=STATE.REJECTED),
-            User(name="João Vilas", email="bruno@bruno.com", user_id=3, state=STATE.PENDING)
+            User(
+                id=uuid.UUID("af852f40-0135-406d-b5d7-7ed5dce9bc8e"),
+                email="soller@soller.com",
+                role=RoleEnum.USER,
+                senha_hash="hash_fake_1"
+            ),
+            User(
+                id=uuid.UUID("b9a52f40-0135-406d-b5d7-7ed5dce9bc8f"),
+                email="brancas@brancas.com",
+                role=RoleEnum.USER,
+                senha_hash="hash_fake_2"
+            ),
+            User(
+                id=uuid.UUID("c1a52f40-0135-406d-b5d7-7ed5dce9bc90"),
+                email="bruno@bruno.com",
+                role=RoleEnum.USER,
+                senha_hash="hash_fake_3"
+            )
         ]
-        self.user_counter = 3
 
-    def get_user(self, user_id: int) -> User:
+    def get_user(self, user_id: uuid.UUID) -> User:
         for user in self.users:
-            if user.user_id == user_id:
+            if str(user.id) == str(user_id):
                 return user
         raise NoItemsFound("user_id")
 
@@ -29,23 +42,17 @@ class UserRepositoryMock(IUserRepository):
 
     def create_user(self, new_user: User) -> User:
         self.users.append(new_user)
-        self.user_counter += 1
         return new_user
 
-    def delete_user(self, user_id: int) -> User:
+    def delete_user(self, user_id: uuid.UUID) -> User:
         for idx, user in enumerate(self.users):
-            if user.user_id == user_id:
+            if str(user.id) == str(user_id):
                 return self.users.pop(idx)
-
         raise NoItemsFound("user_id")
 
-    def update_user(self, user_id: int, new_name: str) -> User:
-        for user in self.users:
-            if user.user_id == user_id:
-                user.name = new_name
+    def update_user(self, user: User) -> User:
+        for idx, existing_user in enumerate(self.users):
+            if existing_user.id == user.id:
+                self.users[idx] = user
                 return user
-
         raise NoItemsFound("user_id")
-
-    def get_user_counter(self) -> int:
-        return self.user_counter

@@ -1,11 +1,15 @@
 import json
 
+from src.modules.update_user.app import update_user_presenter as presenter_module
 from src.modules.update_user.app.update_user_presenter import lambda_handler
 
 
 class Test_UpdateUserPresenter:
 
     def test_update_user(self):
+
+        target_user = presenter_module.repo.users[0]
+
         event = {
             "version": "2.0",
             "routeKey": "$default",
@@ -52,7 +56,10 @@ class Test_UpdateUserPresenter:
                 "time": "12/Mar/2020:19:03:58 +0000",
                 "timeEpoch": 1583348638390
             },
-            "body": '{"user_id": "1",  "new_name": "João Soller"}',
+            "body": json.dumps({
+                "user_id": str(target_user.id),
+                "new_email": "joao@devmaua.com.br"
+            }),
             "pathParameters": None,
             "isBase64Encoded": None,
             "stageVariables": None
@@ -60,6 +67,9 @@ class Test_UpdateUserPresenter:
 
         response = lambda_handler(event, None)
 
-
         assert response["statusCode"] == 200
-        assert json.loads(response["body"])['name'] == 'João Soller'
+        body = json.loads(response["body"])
+        assert body["user_id"] == str(target_user.id)
+        assert body["email"] == "joao@devmaua.com.br"
+        assert body["role"] == target_user.role.value
+        assert body["message"] == "the user was updated successfully"

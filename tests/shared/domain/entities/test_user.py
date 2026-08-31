@@ -1,41 +1,75 @@
-from src.shared.domain.entities.user import User
-from src.shared.domain.enums.state_enum import STATE
-from src.shared.helpers.errors.domain_errors import EntityError
 import pytest
+import uuid
+from src.shared.domain.entities.user import User
+from src.shared.domain.enums.role_enum import RoleEnum
+from src.shared.helpers.errors.domain_errors import EntityError
 
 
 class Test_User:
-    def test_user(self):
-        User(name="VITOR", email="21.01444-2@maua.br", user_id=1, state=STATE.APPROVED)
+    def test_user_creation_success(self):
+        user = User(
+            id=uuid.UUID("2a32a42f-7b05-45c0-9a79-bbcb1c9ac875"),
+            email="teste@teste.com",
+            senha_hash="hash_12345",
+            role=RoleEnum.USER
+        )
+        assert user.id == uuid.UUID("2a32a42f-7b05-45c0-9a79-bbcb1c9ac875")
+        assert user.email == "teste@teste.com"
+        assert user.role == RoleEnum.USER
 
-    def test_user_name_is_none(self):
+    def test_user_invalid_email(self):
         with pytest.raises(EntityError):
-            User(name=None, email="21.01444-2@maua.br", user_id=1, state=STATE.APPROVED)
+            User(
+                email="email_invalido",
+                senha_hash="hash_12345"
+            )
 
-    def test_user_name_is_not_str(self):
+    def test_user_invalid_role(self):
         with pytest.raises(EntityError):
-            User(name=1, email="21.01444-2@maua.br", user_id=1, state=STATE.APPROVED)
+            User(
+                email="teste@teste.com",
+                senha_hash="hash_12345",
+                role="ROLE_INVALIDA"
+            )
 
-    def test_user_name_is_shorter_than_min_length(self):
-        with pytest.raises(EntityError):
-            User(name="V", email="21.01444-2@maua.br", user_id=1, state=STATE.APPROVED)
+#from src.shared.domain.entities.user import User
+#from src.shared.domain.enums.state_enum import STATE
+#from src.shared.helpers.errors.domain_errors import EntityError
+#import pytest
 
-    def test_user_email_is_none(self):
-        with pytest.raises(EntityError):
-            User(name="VITOR", email=None, user_id=1, state=STATE.APPROVED)
 
-    def test_user_email_is_not_valid(self):
-        with pytest.raises(EntityError):
-            User(name="VITOR", email="21.01444-2maua.br", user_id=1, state=STATE.APPROVED)
+#class Test_User:
+#    def test_user(self):
+#        User(name="VITOR", email="21.01444-2@maua.br", user_id=1, state=STATE.APPROVED)
 
-    def test_user_user_id_is_not_int(self):
-        with pytest.raises(EntityError):
-            User(name="VITOR", email="21.01444-2@maua.br", user_id="1", state=STATE.APPROVED)
+#    def test_user_name_is_none(self):
+#       with pytest.raises(EntityError):
+#           User(name=None, email="21.01444-2@maua.br", user_id=1, state=STATE.APPROVED)
 
-    def test_user_user_id_is_negative(self):
-        with pytest.raises(EntityError):
-            User(name="VITOR", email="21.01444-2@maua.br", user_id=-1, state=STATE.APPROVED)
+#   def test_user_name_is_not_str(self):
+#       with pytest.raises(EntityError):
+#           User(name=1, email="21.01444-2@maua.br", user_id=1, state=STATE.APPROVED)
 
-    def test_user_state_is_not_sate_enum(self):
-        with pytest.raises(EntityError):
-            User(name="VITOR", email="21.01444-2@maua.br", user_id=1, state="APPROVED")
+#   def test_user_name_is_shorter_than_min_length(self):
+#       with pytest.raises(EntityError):
+#           User(name="V", email="21.01444-2@maua.br", user_id=1, state=STATE.APPROVED)
+
+#   def test_user_email_is_none(self):
+#       with pytest.raises(EntityError):
+#           User(name="VITOR", email=None, user_id=1, state=STATE.APPROVED)
+
+#   def test_user_email_is_not_valid(self):
+#       with pytest.raises(EntityError):
+#           User(name="VITOR", email="21.01444-2maua.br", user_id=1, state=STATE.APPROVED)
+
+#   def test_user_user_id_is_not_int(self):
+#       with pytest.raises(EntityError):
+#           User(name="VITOR", email="21.01444-2@maua.br", user_id="1", state=STATE.APPROVED)
+
+#   def test_user_user_id_is_negative(self):
+#       with pytest.raises(EntityError):
+#           User(name="VITOR", email="21.01444-2@maua.br", user_id=-1, state=STATE.APPROVED)
+
+#   def test_user_state_is_not_sate_enum(self):
+#       with pytest.raises(EntityError):
+#           User(name="VITOR", email="21.01444-2@maua.br", user_id=1, state="APPROVED")

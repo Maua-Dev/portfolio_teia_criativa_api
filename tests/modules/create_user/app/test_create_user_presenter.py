@@ -1,11 +1,10 @@
 import json
-
 from src.modules.create_user.app.create_user_presenter import lambda_handler
 
 
 class Test_CreateUserPresenter:
 
-    def test_create_user(self):
+    def test_create_user_presenter(self):
         event = {
             "version": "2.0",
             "routeKey": "$default",
@@ -52,12 +51,21 @@ class Test_CreateUserPresenter:
                 "time": "12/Mar/2020:19:03:58 +0000",
                 "timeEpoch": 1583348638390
             },
-            "body": '{"name":"EhOLudjas",  "email":"eho@ludjas.com"}',
+            "body": '{"email":"presenter_test@teste.com", "senha_hash":"hash_presenter"}',
             "pathParameters": None,
-            "isBase64Encoded": None,
+            "isBase64Encoded": False,
             "stageVariables": None
         }
 
+        response = lambda_handler(event, None)
+
+        assert response["statusCode"] == 201
+
+        body = json.loads(response["body"])
+        assert body["email"] == "presenter_test@teste.com"
+        assert body["role"] == "User"
+        assert body["message"] == "the user was created successfully"
+        
         # event = {'body': '{\r\n'
         #                  '    "name": "Bruno Soller Da Silva",\r\n'
         #                  '    "email": "sollinhp@soller.com"\r\n'

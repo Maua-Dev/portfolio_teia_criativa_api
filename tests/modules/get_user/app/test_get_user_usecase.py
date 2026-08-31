@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 
 from src.modules.get_user.app.get_user_usecase import GetUserUsecase
@@ -14,7 +16,7 @@ class Test_GetUserUsecase:
         repo = UserRepositoryMock()
         usecase = GetUserUsecase(repo, observability=observability)
 
-        user = usecase(user_id=repo.users[1].user_id)
+        user = usecase(user_id=str(repo.users[1].id))
 
         assert repo.users[1] == user
 
@@ -23,7 +25,7 @@ class Test_GetUserUsecase:
         usecase = GetUserUsecase(repo, observability=observability)
 
         with pytest.raises(NoItemsFound):
-            user = usecase(user_id=999)
+            user = usecase(user_id=str(uuid.uuid4()))
 
     def test_get_user_invalid_id(self):
         repo = UserRepositoryMock()

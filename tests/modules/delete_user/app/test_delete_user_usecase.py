@@ -1,34 +1,34 @@
-# TEMP: arquivo desabilitado — fora do escopo desta branch / incompatível com contrato atual
-# import pytest
+import pytest
 
-# from src.modules.delete_user.app.delete_user_usecase import DeleteUserUsecase
-# from src.shared.helpers.errors.domain_errors import EntityError
-# from src.shared.helpers.errors.usecase_errors import NoItemsFound
-# from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
+from src.modules.delete_user.app.delete_user_usecase import DeleteUserUsecase
+from src.shared.helpers.errors.domain_errors import EntityError
+from src.shared.helpers.errors.usecase_errors import NoItemsFound
+from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
+
+import uuid
 
 
-# class Test_DeleteUserUsecase:
-#     # TEMP: desabilitado — incompatível com nova entidade User (id/email/role/senha_hash)
-# #     def test_delete_user(self):
-# #         repo = UserRepositoryMock()
-# #         usecase = DeleteUserUsecase(repo)
+class Test_DeleteUserUsecase:
+    def test_delete_user(self):
+        repo = UserRepositoryMock()
+        usecase = DeleteUserUsecase(repo)
 
-# #         lenBefore = len(repo.users)
+        lenBefore = len(repo.users)
 
-# #         user = usecase(1)
+        user = usecase(str(repo.users[0].id))
 
-# #         assert len(repo.users) == lenBefore - 1
+        assert len(repo.users) == lenBefore - 1
 
-#     def test_delete_user_not_found(self):
-#         repo = UserRepositoryMock()
-#         usecase = DeleteUserUsecase(repo)
+    def test_delete_user_not_found(self):
+        repo = UserRepositoryMock()
+        usecase = DeleteUserUsecase(repo)
 
-#         with pytest.raises(NoItemsFound):
-#             user = usecase(69)
+        with pytest.raises(NoItemsFound):
+            user = usecase(str(uuid.uuid4()))
 
-#     def test_delete_user_invalid_id(self):
-#         repo = UserRepositoryMock()
-#         usecase = DeleteUserUsecase(repo)
+    def test_delete_user_invalid_id(self):
+        repo = UserRepositoryMock()
+        usecase = DeleteUserUsecase(repo)
 
-#         with pytest.raises(EntityError):
-#             user = usecase("invalid")
+        with pytest.raises(EntityError):
+            user = usecase("123")

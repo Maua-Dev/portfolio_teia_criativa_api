@@ -1,26 +1,26 @@
-# TEMP: arquivo desabilitado — fora do escopo desta branch / incompatível com contrato atual
-# from src.modules.delete_user.app.delete_user_viewmodel import DeleteUserViewmodel
-# from src.shared.domain.entities.user import User
-# from src.shared.domain.enums.state_enum import STATE
+from src.modules.delete_user.app.delete_user_viewmodel import DeleteUserViewmodel
+from src.shared.domain.entities.user import User
+from src.shared.domain.enums.role_enum import RoleEnum
+import uuid
 
+class Test_DeleteUserViewmodel:
+    def test_delete_user_viewmodel(self):
 
-# class Test_DeleteUserViewmodel:
-#     pass  # TEMP: testes comentados por incompatibilidade com nova User
-#     # TEMP: desabilitado — incompatível com nova entidade User (id/email/role/senha_hash)
-# #     def test_delete_user_viewmodel(self):
-# #         user = User(
-# #             user_id=1,
-# #             name="Vitinho da Silva",
-# #             email="21.01444-2@maua.br",
-# #             state=STATE.APPROVED)
+        user_id = str(uuid.uuid4())
 
-# #         delete_user_viewmodel = DeleteUserViewmodel(user)
+        user = User(
+            id= user_id,
+            name="Vitinho da Silva",
+            email="21.01444-2@maua.br",
+            role=RoleEnum.USER,
+            senha_hash='hash_fake')
 
-# #         expected = {
-# #                     'user_id': 1,
-# #                     'name': 'Vitinho da Silva',
-# #                     'email': '21.01444-2@maua.br',
-# #                     'state': 'APPROVED',
-# #                     'message': 'the user was deleted successfully'}
+        delete_user_viewmodel = DeleteUserViewmodel(user)
 
-# #         assert expected == delete_user_viewmodel.to_dict()
+        expected = {
+                    'user_id': user_id,
+                    'email': '21.01444-2@maua.br',
+                    'role': 'User',
+                    'message': 'the user was deleted successfully'}
+
+        assert expected == delete_user_viewmodel.to_dict()

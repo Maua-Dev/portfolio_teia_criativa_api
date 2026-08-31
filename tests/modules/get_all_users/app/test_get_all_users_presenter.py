@@ -62,7 +62,7 @@ class Test_GetAllUsersPresenter:
             "all_users": [
                 {
                     'email': "soller@soller.com",
-                    'role': RoleEnum.ADMIN.value,
+                    'role': RoleEnum.USER.value,
                 },
                 {
                     'email': "brancas@brancas.com",
@@ -70,7 +70,7 @@ class Test_GetAllUsersPresenter:
                 },
                 {
                     'email': "bruno@bruno.com",
-                    'role': RoleEnum.ADMIN.value,
+                    'role': RoleEnum.USER.value,
                 }
             ],
             "message": "all users has been retrieved"

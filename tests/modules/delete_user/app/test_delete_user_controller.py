@@ -6,19 +6,20 @@
 
 
 # class Test_DeleteUserController:
-#     def test_delete_user_controller(self):
-#             repo = UserRepositoryMock()
-#             usecase = DeleteUserUsecase(repo=repo)
-#             controller = DeleteUserController(usecase=usecase)
+#     # TEMP: desabilitado — incompatível com nova entidade User (id/email/role/senha_hash)
+# #     def test_delete_user_controller(self):
+# #             repo = UserRepositoryMock()
+# #             usecase = DeleteUserUsecase(repo=repo)
+# #             controller = DeleteUserController(usecase=usecase)
 
-#             request = HttpRequest(body={
-#                 'user_id': '1'
-#             })
+# #             request = HttpRequest(body={
+# #                 'user_id': '1'
+# #             })
 
-#             response = controller(request=request)
+# #             response = controller(request=request)
 
-#             assert response.status_code == 200
-#             assert response.body['message'] == 'the user was deleted successfully'
+# #             assert response.status_code == 200
+# #             assert response.body['message'] == 'the user was deleted successfully'
 
 #     def test_delete_user_controller_wrong_type(self):
 #             repo = UserRepositoryMock()

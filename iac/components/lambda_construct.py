@@ -17,6 +17,12 @@ class LambdaConstruct(Construct):
     stack_name: str
     funtions_that_need_dynamo_db_access: list[lambda_.Function] = []
     functions_that_need_s3_access: list[lambda_.Function] = []
+    _public_resource: Resource | None = None
+
+    def _get_or_create_public_resource(self, api_resource: Resource) -> Resource:
+        if self._public_resource is None:
+            self._public_resource = api_resource.add_resource("public")
+        return self._public_resource
 
     def create_lambda_api_gateway_integration(
         self, 
@@ -45,7 +51,9 @@ class LambdaConstruct(Construct):
         )
 
         if public:
-            api_resource.add_resource("public").add_resource(module_name.replace("_", "-")).add_method(
+            self._get_or_create_public_resource(api_resource).add_resource(
+                module_name.replace("_", "-")
+            ).add_method(
                 method,
                 integration=LambdaIntegration(function),
                 api_key_required=api_key_required
@@ -57,6 +65,35 @@ class LambdaConstruct(Construct):
                 api_key_required=api_key_required
             )
 
+        return function
+
+    def _create_api_docs_endpoints(
+        self,
+        api_resource: Resource,
+        environment_variables: dict,
+    ) -> lambda_.Function:
+        """
+        Setup único: Swagger UI + OpenAPI JSON.
+        - GET .../public/docs
+        - GET .../public/openapi-json
+        """
+        function = lambda_.Function(
+            self,
+            "GetApiDocs",
+            code=lambda_.Code.from_asset("../src/modules/get_api_docs"),
+            handler="app.get_api_docs_presenter.lambda_handler",
+            function_name=f"get_api_docs-{self.stack_name}-{self.stage}"[:63],
+            runtime=lambda_.Runtime.PYTHON_3_13,
+            layers=[self.lambda_layer],
+            environment=environment_variables,
+            timeout=Duration.seconds(30),
+            memory_size=512,
+        )
+
+        public = self._get_or_create_public_resource(api_resource)
+        integration = LambdaIntegration(function)
+        public.add_resource("docs").add_method("GET", integration, api_key_required=False)
+        public.add_resource("openapi-json").add_method("GET", integration, api_key_required=False)
         return function
 
     def __init__(
@@ -74,6 +111,7 @@ class LambdaConstruct(Construct):
         
         self.stage = stage
         self.stack_name = stack_name
+        self._public_resource = None
 
         layer_asset_path = os.path.join(os.path.dirname(__file__), "..", "lambda_layer_out_temp")
         if not os.path.exists(layer_asset_path):
@@ -85,6 +123,11 @@ class LambdaConstruct(Construct):
             layer_version_name=f"{stack_name}-LambdaLayer-{self.stage}",
             code=lambda_.Code.from_asset(layer_asset_path),
             compatible_runtimes=[lambda_.Runtime.PYTHON_3_13]
+        )
+
+        self.get_api_docs = self._create_api_docs_endpoints(
+            api_resource=api_gateway_resource,
+            environment_variables=environment_variables,
         )
         
         # self.contact_us = self.create_lambda_api_gateway_integration(
@@ -132,4 +175,4 @@ class LambdaConstruct(Construct):
         # )
         
         # self.funtions_that_need_dynamo_db_access.append(self.grade_optimizer_function)
-        
+       

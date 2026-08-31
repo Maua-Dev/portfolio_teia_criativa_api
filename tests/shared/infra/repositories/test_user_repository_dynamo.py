@@ -1,5 +1,4 @@
 import os
-
 import pytest
 
 pytest.importorskip("src.shared.infra.repositories.user_repository_dynamo")

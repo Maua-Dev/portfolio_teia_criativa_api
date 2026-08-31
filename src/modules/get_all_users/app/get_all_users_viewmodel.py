@@ -1,23 +1,21 @@
 from typing import List
 
+from pydantic import BaseModel, ConfigDict
+
 from src.shared.domain.entities.user import User
+from src.shared.domain.enums.role_enum import RoleEnum
 
+class UserViewmodel(BaseModel):
+    model_config = ConfigDict(use_enum_values=True)
 
-class UserViewmodel:
+    email: str
+    role :RoleEnum
+
     def __init__(self, user: User):
-        self.state = user.state
-        self.email = user.email
-        self.name = user.name
-        self.user_id = user.user_id
+        super().__init__(email=user.email, role=user.role)
 
     def to_dict(self):
-        return {
-            'user_id': self.user_id,
-            'name': self.name,
-            'email': self.email,
-            'state': self.state.value
-        }
-
+        return self.model_dump()
 
 class GetAllUsersViewmodel:
     def __init__(self, users_list: List[User]):

@@ -34,11 +34,11 @@ class DynamoConstruct(Construct):
             self,
             id="PortfolioTeiaCriativaTable",
             partition_key=dynamodb.Attribute(
-                name="pk",
+                name="pk", # NOTE: PK_ATTR dentro de external/dynamo_keys deve estar condizente com essa linha
                 type=dynamodb.AttributeType.STRING,
             ),
             sort_key=dynamodb.Attribute(
-                name="sk",
+                name="sk", # NOTE: SK_ATTR dentro de external/dynamo_keys deve estar condizente com essa linha
                 type=dynamodb.AttributeType.STRING,
             ),
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,

@@ -13,11 +13,11 @@ class DeleteUserUsecase:
     def __call__(self, user_id: str) -> User:
 
         try:
-            uuid.UUID(user_id)
+            parsed_id = uuid.UUID(user_id)
         except ValueError:
             raise EntityError("user_id")
 
-        user = self.repo.delete_user(user_id)
+        user = self.repo.delete_user(parsed_id)
 
         if user is None:
             raise NoItemsFound("user_id")

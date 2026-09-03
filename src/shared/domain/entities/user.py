@@ -28,7 +28,7 @@ class User(BaseModel):
         description="Role do usuário"
     )
     active: bool = Field(
-        ...,
+        default=True,
         description="Usuário Ativo"
     )
     user_name: str =  Field(

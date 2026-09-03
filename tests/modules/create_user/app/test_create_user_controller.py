@@ -12,7 +12,7 @@ class Test_CreateUserController:
 
         request = HttpRequest(body={
             'email': 'teste_controller@teste.com',
-            'senha_hash': 'senha_hash_controller'
+            'user_name': 'user_name_test1'
         })
 
         response = controller(request=request)
@@ -20,6 +20,8 @@ class Test_CreateUserController:
         assert response.status_code == 201
         assert response.body['email'] == 'teste_controller@teste.com'
         assert response.body['role'] == 'User'
+        assert response.body['active'] == True
+        assert response.body['user_name'] == 'user_name_test1'
         assert response.body['message'] == "the user was created successfully"
 
     def test_create_user_controller_missing_email(self):
@@ -28,7 +30,7 @@ class Test_CreateUserController:
         controller = CreateUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'senha_hash': 'senha_hash_controller'
+            'user_name': 'user_name_test1'
         })
 
         response = controller(request=request)
@@ -36,7 +38,7 @@ class Test_CreateUserController:
         assert response.status_code == 400
         assert response.body == "Field email is missing"
 
-    def test_create_user_controller_missing_senha_hash(self):
+    def test_create_user_controller_missing_user_name(self):
         repo = UserRepositoryMock()
         usecase = CreateUserUsecase(repo=repo)
         controller = CreateUserController(usecase=usecase)
@@ -48,7 +50,7 @@ class Test_CreateUserController:
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == "Field senha_hash is missing"
+        assert response.body == "Field user_name is missing"
 
     def test_create_user_controller_wrong_type_email(self):
         repo = UserRepositoryMock()
@@ -72,13 +74,13 @@ class Test_CreateUserController:
 
         request = HttpRequest(body={
             'email': 'teste_controller@teste.com',
-            'senha_hash': 12345
+            'user_name': 12345
         })
 
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert "senha_hash" in response.body
+        assert "user_name" in response.body
 
     #def test_create_user_controller_invalid_email(self):
         #repo = UserRepositoryMock()

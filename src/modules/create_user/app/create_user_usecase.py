@@ -8,12 +8,13 @@ class CreateUserUsecase:
     def __init__(self, repo: IUserRepository):
         self.repo = repo
 
-    def __call__(self, email: str, senha_hash: str, role: RoleEnum = RoleEnum.USER) -> User:
+    def __call__(self, email: str, role: RoleEnum = RoleEnum.USER, active=True, user_name=str) -> User:
         user = User(
             id=uuid.uuid4(),
             email=email,
-            senha_hash=senha_hash,
-            role=role
+            role=role,
+            active=active,
+            user_name=user_name
         )
 
         return self.repo.create_user(user)

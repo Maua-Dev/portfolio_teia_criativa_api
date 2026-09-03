@@ -51,7 +51,7 @@ class Test_CreateUserPresenter:
                 "time": "12/Mar/2020:19:03:58 +0000",
                 "timeEpoch": 1583348638390
             },
-            "body": '{"email":"presenter_test@teste.com", "senha_hash":"hash_presenter"}',
+            "body": '{"email":"presenter_test@teste.com", "user_name":"user_name_test1"}',
             "pathParameters": None,
             "isBase64Encoded": False,
             "stageVariables": None
@@ -64,6 +64,8 @@ class Test_CreateUserPresenter:
         body = json.loads(response["body"])
         assert body["email"] == "presenter_test@teste.com"
         assert body["role"] == "User"
+        assert body["active"] == True
+        assert body["user_name"] == "user_name_test1"
         assert body["message"] == "the user was created successfully"
         
         # event = {'body': '{\r\n'

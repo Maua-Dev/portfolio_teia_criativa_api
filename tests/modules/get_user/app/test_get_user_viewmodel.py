@@ -12,13 +12,16 @@ class Test_GetUserViewModel:
             name="Vitor Soller",
             email="vitinho@hype.com",
             role=RoleEnum.USER,
-            senha_hash="hash_fake_super_segura_123456789"
+            active=True,
+            user_name="username_1"
         )
         userViewmodel = GetUserViewmodel(user=user).to_dict()
 
         expected = {
                     'email': 'vitinho@hype.com',
                     'role': RoleEnum.USER.value,
+                    'active': True,
+                    'user_name': "username_1",
                     'message': 'the user was retrieved successfully'}
 
         assert expected == userViewmodel

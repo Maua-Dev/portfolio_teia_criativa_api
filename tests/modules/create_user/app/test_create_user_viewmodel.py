@@ -8,7 +8,7 @@ class Test_CreateUserViewModel:
         user = User(
             email="teste@teste.com",
             role=RoleEnum.USER,
-            senha_hash="hash_seguro",
+            user_name="user_name_test1"
         )
         viewmodel = CreateUserViewmodel(user)
 
@@ -18,5 +18,7 @@ class Test_CreateUserViewModel:
             'id': str(user.id),
             'email': 'teste@teste.com',
             'role': RoleEnum.USER.value,
+            'active': user.active,
+            'user_name': user.user_name,
             'message': 'the user was created successfully'
         }

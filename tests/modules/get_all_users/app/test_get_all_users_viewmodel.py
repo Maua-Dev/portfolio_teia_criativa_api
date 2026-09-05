@@ -8,14 +8,16 @@ from src.shared.domain.enums.role_enum import RoleEnum
 class Test_GetAllUsersViewmodel:
     all_users_list = [
         User(id=uuid.UUID("af852f40-0135-406d-b5d7-7ed5dce9bc8e"),
-             senha_hash="hash_fake_1",
              email="deuzexmachina@gmail.com",
-             role=RoleEnum.ADMIN),
+             role=RoleEnum.ADMIN,
+             active=True,
+             user_name="username_test1"),
 
         User(id=uuid.UUID("b9a52f40-0135-406d-b5d7-7ed5dce9bc8f"),
-             senha_hash="hash_fake_2",
              email="laurinha@gmail.com",
-             role=RoleEnum.USER),
+             role=RoleEnum.USER,
+             active=False,
+             user_name="username_test2")
     ]
 
     def test_get_all_users_viewmodel(self):
@@ -26,10 +28,14 @@ class Test_GetAllUsersViewmodel:
                 {
                     'email': "deuzexmachina@gmail.com",
                     'role': RoleEnum.ADMIN.value,
+                    'active': True,
+                    'user_name': "username_test1"
                 },
                 {
                     'email': "laurinha@gmail.com",
                     'role': RoleEnum.USER.value,
+                    'active': False,
+                    'user_name': "username_test2"
                 }
             ],
             "message": "all users has been retrieved"
@@ -44,7 +50,9 @@ class Test_GetAllUsersViewmodel:
             User(id=uuid.UUID("b9a52f40-0135-406d-b5d7-7ed5dce9bc8f"),
                  senha_hash="hash_fake_2",
                  email="laurinha@gmail.com",
-                 role=RoleEnum.USER),
+                 role=RoleEnum.USER,
+                 active=True,
+                 user_name="username_test3"),
 )
 
         response = viewmodel.to_dict()
@@ -52,6 +60,8 @@ class Test_GetAllUsersViewmodel:
         expected = {
                     'email': "laurinha@gmail.com",
                     'role': RoleEnum.USER.value,
+                    'active': True,
+                    'user_name': "username_test3"
         }
 
         assert response == expected

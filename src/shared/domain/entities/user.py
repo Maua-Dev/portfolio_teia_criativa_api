@@ -1,5 +1,3 @@
-from enum import Enum
-from uuid import UUID, uuid4
 import uuid
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, ValidationError
 from src.shared.domain.enums.role_enum import RoleEnum
@@ -8,6 +6,8 @@ from src.shared.helpers.errors.domain_errors import EntityError
 
 class User(BaseModel):
     model_config = ConfigDict(frozen=True)
+    # Frozen vai travar essa entidade, mas temos campos que provavelmente poderão ser alterados
+    # Ex: active, user_name. Acho que vale remover
 
     def __init__(self, **data):
         try:
@@ -27,7 +27,11 @@ class User(BaseModel):
         default=RoleEnum.USER,
         description="Role do usuário"
     )
-    senha_hash: str = Field(
+    active: bool = Field(
+        default=True,
+        description="Usuário Ativo"
+    )
+    user_name: str =  Field(
         ...,
-        description="Hash da senha do usuário"
+        description="Nome do usuário"
     )

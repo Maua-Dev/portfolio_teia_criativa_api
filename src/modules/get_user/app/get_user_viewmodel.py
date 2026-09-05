@@ -6,14 +6,20 @@ class GetUserViewmodel:
     #user_id: str
     email: str
     role: RoleEnum
+    active: bool
+    user_name: str
 
     def __init__(self, user: User):
         self.email = user.email
         self.role = user.role
+        self.active = user.active
+        self.user_name = user.user_name
 
     def to_dict(self):
         return {
             'email': self.email,
             'role': self.role.value,
+            'active': self.active,
+            'user_name': self.user_name,
             'message': "the user was retrieved successfully"
         }

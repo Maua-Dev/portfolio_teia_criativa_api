@@ -4,11 +4,11 @@ from src.modules.update_user.app.update_user_usecase import UpdateUserUsecase
 from src.shared.helpers.external_interfaces.http_models import HttpRequest
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
-import uuid
+import uuid 
 
 
 class Test_UpdateUserController:
-    #TEMP: desabilitado — incompatível com nova entidade User (id/email/role/senha_hash)
+    #TEMP: desabilitado — incompatível com nova entidade User (id/email/role/active/user_name)
     def test_update_user_controller(self):
         repo = UserRepositoryMock()
         usecase = UpdateUserUsecase(repo=repo)

@@ -7,7 +7,7 @@ from src.shared.infra.repositories.project_repository_mock import ProjectReposit
 
 
 class Test_ProjectRepositoryDynamo:
-
+    @pytest.mark.skip(reason="Needs dynamoDB")
     def test_create_project(self):
         os.environ["STAGE"] = "TEST"
 
@@ -17,6 +17,7 @@ class Test_ProjectRepositoryDynamo:
 
         assert project_repository_mock.projects[0].title == resp.title
 
+    @pytest.mark.skip(reason="Needs dynamoDB")
     def test_get_project(self):
         os.environ["STAGE"] = "TEST"
 
@@ -28,6 +29,7 @@ class Test_ProjectRepositoryDynamo:
 
         assert created.title == resp.title
 
+    @pytest.mark.skip(reason="Needs dynamoDB")
     def test_delete_project(self):
         os.environ["STAGE"] = "TEST"
 
@@ -39,6 +41,7 @@ class Test_ProjectRepositoryDynamo:
 
         assert created.title == resp.title
 
+    @pytest.mark.skip(reason="Needs dynamoDB")
     def test_get_all_project(self):
         os.environ["STAGE"] = "TEST"
 
@@ -50,6 +53,7 @@ class Test_ProjectRepositoryDynamo:
 
         assert len(resp) >= 1
 
+    @pytest.mark.skip(reason="Needs dynamoDB")
     def test_update_project(self):
         os.environ["STAGE"] = "TEST"
 

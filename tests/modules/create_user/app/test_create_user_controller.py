@@ -58,8 +58,7 @@ class Test_CreateUserController:
         controller = CreateUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'email': 12345,
-            'senha_hash': 'senha_hash_controller'
+            'email': 12345
         })
 
         response = controller(request=request)

@@ -8,7 +8,6 @@ import uuid
 
 
 class Test_UpdateUserController:
-    #TEMP: desabilitado — incompatível com nova entidade User (id/email/role/active/user_name)
     def test_update_user_controller(self):
         repo = UserRepositoryMock()
         usecase = UpdateUserUsecase(repo=repo)

@@ -69,4 +69,6 @@ class Test_GetUserPresenter:
         body = json.loads(response["body"])
         assert json.loads(response["body"])["email"] == "soller@soller.com"
         assert json.loads(response["body"])["role"] == target_user.role.value
+        assert json.loads(response["body"])["active"] == target_user.active
+        assert json.loads(response["body"])["user_name"] == target_user.user_name
         assert json.loads(response["body"])["message"] == "the user was retrieved successfully"

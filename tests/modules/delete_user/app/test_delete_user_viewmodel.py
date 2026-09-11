@@ -10,7 +10,6 @@ class Test_DeleteUserViewmodel:
 
         user = User(
             id= user_id,
-            name="Vitinho da Silva",
             email="21.01444-2@maua.br",
             role=RoleEnum.USER,
             active=True,

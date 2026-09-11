@@ -21,6 +21,8 @@ class Test_UserDynamoDTO:
         assert dynamo_dict[SK_ATTR] == f"USER#{user.id}"
         assert dynamo_dict["email"] == user.email
         assert dynamo_dict["role"] == user.role.value
+        assert dynamo_dict["active"] == user.active
+        assert dynamo_dict["user_name"] == user.user_name
 
     def test_from_dynamo_to_entity_roundtrip(self):
         user = User(

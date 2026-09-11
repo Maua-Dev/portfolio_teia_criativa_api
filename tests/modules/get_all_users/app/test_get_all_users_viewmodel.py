@@ -48,7 +48,6 @@ class Test_GetAllUsersViewmodel:
     def test_user_viewmodel(self):
         viewmodel = UserViewmodel(
             User(id=uuid.UUID("b9a52f40-0135-406d-b5d7-7ed5dce9bc8f"),
-                 senha_hash="hash_fake_2",
                  email="laurinha@gmail.com",
                  role=RoleEnum.USER,
                  active=True,

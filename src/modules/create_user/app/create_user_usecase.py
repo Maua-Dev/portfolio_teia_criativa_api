@@ -8,7 +8,7 @@ class CreateUserUsecase:
     def __init__(self, repo: IUserRepository):
         self.repo = repo
 
-    def __call__(self, email: str, role: RoleEnum = RoleEnum.USER, active=True, user_name=str) -> User:
+    def __call__(self, email: str, user_name: str, active: bool = True, role: RoleEnum = RoleEnum.USER) -> User:
         user = User(
             id=uuid.uuid4(),
             email=email,

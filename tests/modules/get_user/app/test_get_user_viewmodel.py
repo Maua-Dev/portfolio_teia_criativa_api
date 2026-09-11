@@ -8,8 +8,7 @@ from src.shared.domain.enums.role_enum import RoleEnum
 class Test_GetUserViewModel:
     def test_get_user_viewmodel(self):
         user = User(
-            user_id= str(uuid.uuid4()),
-            name="Vitor Soller",
+            id= str(uuid.uuid4()),
             email="vitinho@hype.com",
             role=RoleEnum.USER,
             active=True,

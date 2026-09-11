@@ -5,9 +5,7 @@ from src.shared.helpers.errors.domain_errors import EntityError
 
 
 class User(BaseModel):
-    model_config = ConfigDict(frozen=True)
-    # Frozen vai travar essa entidade, mas temos campos que provavelmente poderão ser alterados
-    # Ex: active, user_name. Acho que vale remover
+    model_config = ConfigDict(frozen=True, extra='forbid')
 
     def __init__(self, **data):
         try:

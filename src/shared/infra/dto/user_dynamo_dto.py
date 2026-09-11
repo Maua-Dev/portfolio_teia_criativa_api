@@ -20,7 +20,8 @@ class UserDynamoDTO:
             "id": str(user.id),
             "email": user.email,
             "role": user.role.value if hasattr(user.role, 'value') else str(user.role),
-            "senha_hash": user.senha_hash
+            "active": user.active,
+            "user_name": user.user_name
         }
 
     @staticmethod

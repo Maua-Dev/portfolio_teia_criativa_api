@@ -11,7 +11,8 @@ class Test_UpdateUserViewmodel:
             id=uuid.UUID("af852f40-0135-406d-b5d7-7ed5dce9bc8e"),
             email="teste@test.com",
             role=RoleEnum.USER,
-            senha_hash="hash_fake"
+            active=True,
+            user_name="username_test1"
         )
 
         updated_user_viewmodel = UpdateUserViewmodel(user)
@@ -20,6 +21,8 @@ class Test_UpdateUserViewmodel:
             'user_id': "af852f40-0135-406d-b5d7-7ed5dce9bc8e",
             'email': "teste@test.com",
             'role': RoleEnum.USER.value,
+            'active': user.active,
+            'user_name': "username_test1",
             'message': "the user was updated successfully"
         }
 

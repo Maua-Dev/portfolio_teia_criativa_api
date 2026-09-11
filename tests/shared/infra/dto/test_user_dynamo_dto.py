@@ -10,8 +10,9 @@ class Test_UserDynamoDTO:
         user = User(
             id=uuid.uuid4(),
             email="teste@teste.com",
-            senha_hash="hash123",
-            role=RoleEnum.USER
+            role=RoleEnum.USER,
+            active=True,
+            user_name="teste_username_teste_teste"
         )
 
         dynamo_dict = UserDynamoDTO.from_entity_to_dynamo(user)
@@ -20,13 +21,16 @@ class Test_UserDynamoDTO:
         assert dynamo_dict[SK_ATTR] == f"USER#{user.id}"
         assert dynamo_dict["email"] == user.email
         assert dynamo_dict["role"] == user.role.value
+        assert dynamo_dict["active"] == user.active
+        assert dynamo_dict["user_name"] == user.user_name
 
     def test_from_dynamo_to_entity_roundtrip(self):
         user = User(
             id=uuid.uuid4(),
             email="teste@teste.com",
-            senha_hash="hash123",
-            role=RoleEnum.USER
+            role=RoleEnum.USER,
+            active=True,
+            user_name="teste_username_teste_teste"
         )
 
         dynamo_dict = UserDynamoDTO.from_entity_to_dynamo(user)
@@ -35,3 +39,5 @@ class Test_UserDynamoDTO:
         assert entity.id == user.id
         assert entity.email == user.email
         assert entity.role == user.role
+        assert entity.active == user.active
+        assert entity.user_name == user.user_name

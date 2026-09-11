@@ -63,14 +63,21 @@ class Test_GetAllUsersPresenter:
                 {
                     'email': "soller@soller.com",
                     'role': RoleEnum.USER.value,
+                    'active': True,
+                    'user_name': 'username_1'
+
                 },
                 {
                     'email': "brancas@brancas.com",
                     'role': RoleEnum.USER.value,
+                    'active': True,
+                    'user_name': "username_2"
                 },
                 {
                     'email': "bruno@bruno.com",
                     'role': RoleEnum.USER.value,
+                    'active': True,
+                    'user_name': "username_3"
                 }
             ],
             "message": "all users has been retrieved"

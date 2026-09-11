@@ -10,26 +10,28 @@ class Test_User:
         user = User(
             id=uuid.UUID("2a32a42f-7b05-45c0-9a79-bbcb1c9ac875"),
             email="teste@teste.com",
-            senha_hash="hash_12345",
-            role=RoleEnum.USER
+            role=RoleEnum.USER,
+            active=True,
+            user_name="username_test"
         )
         assert user.id == uuid.UUID("2a32a42f-7b05-45c0-9a79-bbcb1c9ac875")
         assert user.email == "teste@teste.com"
-        assert user.role == RoleEnum.USER
+        assert user.active == True
+        assert user.user_name == "username_test"
 
     def test_user_invalid_email(self):
         with pytest.raises(EntityError):
             User(
                 email="email_invalido",
-                senha_hash="hash_12345"
+                user_name="usuario_que_nao_coloca_email_valido"
             )
 
     def test_user_invalid_role(self):
         with pytest.raises(EntityError):
             User(
                 email="teste@teste.com",
-                senha_hash="hash_12345",
-                role="ROLE_INVALIDA"
+                role="ROLE_INVALIDA",
+                user_name="usuario_que_nao_coloca_role_valida"
             )
 
 #from src.shared.domain.entities.user import User

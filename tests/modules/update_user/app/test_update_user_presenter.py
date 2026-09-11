@@ -72,4 +72,6 @@ class Test_UpdateUserPresenter:
         assert body["user_id"] == str(target_user.id)
         assert body["email"] == "joao@devmaua.com.br"
         assert body["role"] == target_user.role.value
+        assert body["active"] == target_user.active
+        assert body["user_name"] == target_user.user_name
         assert body["message"] == "the user was updated successfully"

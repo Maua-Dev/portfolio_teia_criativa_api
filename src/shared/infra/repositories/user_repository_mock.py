@@ -15,19 +15,21 @@ class UserRepositoryMock(IUserRepository):
                 id=uuid.UUID("af852f40-0135-406d-b5d7-7ed5dce9bc8e"),
                 email="soller@soller.com",
                 role=RoleEnum.USER,
-                senha_hash="hash_fake_1"
+                active=True,
+                user_name="username_1"
             ),
             User(
                 id=uuid.UUID("b9a52f40-0135-406d-b5d7-7ed5dce9bc8f"),
                 email="brancas@brancas.com",
                 role=RoleEnum.USER,
-                senha_hash="hash_fake_2"
+                active=True,
+                user_name="username_2"
             ),
             User(
                 id=uuid.UUID("c1a52f40-0135-406d-b5d7-7ed5dce9bc90"),
                 email="bruno@bruno.com",
-                role=RoleEnum.USER,
-                senha_hash="hash_fake_3"
+                active=True,
+                user_name="username_3"
             )
         ]
 

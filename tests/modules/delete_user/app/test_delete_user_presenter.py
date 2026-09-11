@@ -68,6 +68,8 @@ class Test_DeleteUserPresenter:
         expected = {'user_id': existing_id,
                      'email': existing_user.email,
                      'role': existing_user.role.value,
+                     'active': existing_user.active,
+                     'user_name': existing_user.user_name,
                      'message': 'the user was deleted successfully'}
 
         assert json.loads(response["body"]) == expected

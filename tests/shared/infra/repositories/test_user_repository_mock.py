@@ -14,6 +14,8 @@ class Test_UserRepositoryMock:
         assert user.email == "soller@soller.com"
         assert user.id == uuid.UUID("af852f40-0135-406d-b5d7-7ed5dce9bc8e")
         assert user.role == RoleEnum.USER
+        assert user.active == True
+        assert user.user_name == "username_1"
 
     def test_get_user_not_found(self):
         repo = UserRepositoryMock()
@@ -30,8 +32,9 @@ class Test_UserRepositoryMock:
         user = User(
             id=uuid.UUID("d2a52f40-0135-406d-b5d7-7ed5dce9bc91"),
             email="dohype@vitin.com",
-            senha_hash="hash_fake_4",
-            role=RoleEnum.USER
+            role=RoleEnum.USER,
+            active=True,
+            user_name="username_test1"
         )
 
         repo.create_user(user)
@@ -54,8 +57,9 @@ class Test_UserRepositoryMock:
         updated = User(
             id=uuid.UUID("af852f40-0135-406d-b5d7-7ed5dce9bc8e"),
             email="novo_email@soller.com",
-            senha_hash="hash_fake_1",
-            role=RoleEnum.USER
+            role=RoleEnum.USER,
+            active=False,
+            user_name="username_test2"
         )
         user = repo.update_user(updated)
         assert user.email == "novo_email@soller.com"
@@ -66,8 +70,9 @@ class Test_UserRepositoryMock:
         non_existent_user = User(
             id=uuid.uuid4(),
             email="yurialberto@yurialberto.com",
-            senha_hash="hash_fake_x",
-            role=RoleEnum.USER
+            role=RoleEnum.USER,
+            active=True,
+            user_name="username_test3"
         )
         with pytest.raises(NoItemsFound):
             repo.update_user(non_existent_user)

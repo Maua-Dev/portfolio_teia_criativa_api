@@ -10,9 +10,11 @@ class UserViewmodel(BaseModel):
 
     email: str
     role :RoleEnum
+    active: bool
+    user_name: str
 
     def __init__(self, user: User):
-        super().__init__(email=user.email, role=user.role)
+        super().__init__(email=user.email, role=user.role, active=user.active, user_name = user.user_name)
 
     def to_dict(self):
         return self.model_dump()

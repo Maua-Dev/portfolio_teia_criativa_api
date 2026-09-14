@@ -1,4 +1,3 @@
-#TEMP: arquivo desabilitado — fora do escopo desta branch / incompatível com contrato atual
 from src.modules.user.update_user.app.update_user_viewmodel import UpdateUserViewmodel
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.role_enum import RoleEnum
@@ -11,7 +10,8 @@ class Test_UpdateUserViewmodel:
             id=uuid.UUID("af852f40-0135-406d-b5d7-7ed5dce9bc8e"),
             email="teste@test.com",
             role=RoleEnum.USER,
-            senha_hash="hash_fake"
+            active=True,
+            user_name="username_test1"
         )
 
         updated_user_viewmodel = UpdateUserViewmodel(user)
@@ -20,6 +20,8 @@ class Test_UpdateUserViewmodel:
             'user_id': "af852f40-0135-406d-b5d7-7ed5dce9bc8e",
             'email': "teste@test.com",
             'role': RoleEnum.USER.value,
+            'active': user.active,
+            'user_name': "username_test1",
             'message': "the user was updated successfully"
         }
 

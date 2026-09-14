@@ -11,17 +11,17 @@ class Test_CreateUserUsecase:
         repo = UserRepositoryMock()
         usecase = CreateUserUsecase(repo=repo)
 
-        user = usecase(email="novo_user@teste.com", senha_hash="senha_hash_123")
+        user = usecase(email="novo_user@teste.com", user_name="user_name_test1")
 
         assert user.email == "novo_user@teste.com"
         assert user.role == RoleEnum.USER
-        assert user.senha_hash == "senha_hash_123"
+        assert user.user_name == "user_name_test1"
 
     def test_create_user_usecase_invalid_email(self):
         repo = UserRepositoryMock()
         usecase = CreateUserUsecase(repo=repo)
 
         with pytest.raises(EntityError):
-            usecase(email="email_invalido_sem_arroba", senha_hash="hash_senha_123")
+            usecase(email="email_invalido_sem_arroba", user_name="user_name_test1")
 
 

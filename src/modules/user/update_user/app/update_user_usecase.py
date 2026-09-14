@@ -24,7 +24,8 @@ class UpdateUserUsecase:
             id=user.id,
             email=new_email,
             role=user.role,
-            senha_hash=user.senha_hash
+            active=user.active,
+            user_name=user.user_name
         )
 
         return self.repo.update_user(user=updated_user)

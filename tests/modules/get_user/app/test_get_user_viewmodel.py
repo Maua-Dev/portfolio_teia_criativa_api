@@ -8,17 +8,19 @@ from src.shared.domain.enums.role_enum import RoleEnum
 class Test_GetUserViewModel:
     def test_get_user_viewmodel(self):
         user = User(
-            user_id= str(uuid.uuid4()),
-            name="Vitor Soller",
+            id= str(uuid.uuid4()),
             email="vitinho@hype.com",
             role=RoleEnum.USER,
-            senha_hash="hash_fake_super_segura_123456789"
+            active=True,
+            user_name="username_1"
         )
         userViewmodel = GetUserViewmodel(user=user).to_dict()
 
         expected = {
                     'email': 'vitinho@hype.com',
                     'role': RoleEnum.USER.value,
+                    'active': True,
+                    'user_name': "username_1",
                     'message': 'the user was retrieved successfully'}
 
         assert expected == userViewmodel

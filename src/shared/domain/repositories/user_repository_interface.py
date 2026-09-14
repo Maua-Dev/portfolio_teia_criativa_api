@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
+from uuid import UUID
 
 from src.shared.domain.entities.user import User
 
@@ -7,7 +8,7 @@ from src.shared.domain.entities.user import User
 class IUserRepository(ABC):
 
     @abstractmethod
-    def get_user(self, user_id: int) -> User:
+    def get_user(self, user_id: UUID) -> User:
         """
         If user not found raise NoItemsFound
         """
@@ -22,22 +23,15 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def delete_user(self, user_id: int) -> User:
+    def delete_user(self, user_id: UUID) -> User:
         """
         If user not found raise NoItemsFound
         """
         pass
 
     @abstractmethod
-    def update_user(self, user_id: int, new_name: str) -> User:
+    def update_user(self, user: User) -> User:
         """
         If user not found raise NoItemsFound
-        """
-        pass
-
-    @abstractmethod
-    def get_user_counter(self) -> int:
-        """
-        Returns the number of all users that have ever been created
         """
         pass

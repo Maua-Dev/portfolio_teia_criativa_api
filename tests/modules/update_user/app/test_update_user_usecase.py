@@ -9,21 +9,26 @@ class Test_UpdateUserUsecase:
     def test_update_user_usecase(selfs):
         repo = UserRepositoryMock()
         usecase = UpdateUserUsecase(repo=repo)
-        updated_user = usecase(user_id=1, new_name="Bruno Guirão MPNTM")
 
-        assert updated_user.name == "Bruno Guirão MPNTM"
+        existing_user_id = str(repo.users[0].id)
+
+        updated_user = usecase(user_id=existing_user_id, new_email="testeemail@devmaua.com.br")
+
+        assert updated_user.email == "testeemail@devmaua.com.br"
 
     def test_update_user_usecase_wrong_user_id(selfs):
         repo = UserRepositoryMock()
         usecase = UpdateUserUsecase(repo=repo)
 
         with pytest.raises(EntityError):
-            usecase(user_id="1", new_name="Bruno Guirão MPNTM")
+            usecase(user_id="invalid-uuid", new_email="testeemail@devmaua.com.br")
 
-    def test_update_user_usecase_wrong_new_name(selfs):
+    def test_update_user_usecase_wrong_new_email(selfs):
         repo = UserRepositoryMock()
         usecase = UpdateUserUsecase(repo=repo)
 
+        existing_user_id = str(repo.users[0].id)
+
         with pytest.raises(EntityError):
-            usecase(user_id=1, new_name=1)
+            usecase(user_id=existing_user_id, new_email=1)
 

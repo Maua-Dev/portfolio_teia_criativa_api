@@ -6,6 +6,8 @@ from src.shared.helpers.errors.controller_errors import MissingParameters, Wrong
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadRequest, InternalServerError
 
+import uuid
+
 
 class DeleteUserController:
 
@@ -13,21 +15,22 @@ class DeleteUserController:
         self.DeleteUserUsecase = usecase
 
     def __call__(self, request: IRequest) -> IResponse:
+
+        user_id = request.data.get('user_id')
+
         try:
-            if request.data.get('user_id') is None:
+            if user_id is None:
                 raise MissingParameters('user_id')
 
-            if type(request.data.get('user_id')) != str:
+            if not isinstance(user_id,str):
                 raise WrongTypeParameter(
                     fieldName="user_id",
                     fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('user_id').__class__.__name__
+                    fieldTypeReceived=user_id.__class__.__name__
                 )
-            if not request.data.get('user_id').isdecimal():
-                raise EntityError("user_id")
 
             user = self.DeleteUserUsecase(
-                user_id=int(request.data.get('user_id'))
+                user_id=str(user_id)
             )
 
             viewmodel = DeleteUserViewmodel(user=user)

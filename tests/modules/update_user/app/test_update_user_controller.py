@@ -1,10 +1,9 @@
-#TEMP: arquivo desabilitado — fora do escopo desta branch / incompatível com contrato atual
 from src.modules.update_user.app.update_user_controller import UpdateUserController
 from src.modules.update_user.app.update_user_usecase import UpdateUserUsecase
 from src.shared.helpers.external_interfaces.http_models import HttpRequest
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
-import uuid 
+import uuid
 
 
 class Test_UpdateUserController:
@@ -86,7 +85,6 @@ class Test_UpdateUserController:
         assert response.status_code == 400
         assert response.body == "The field 'new_email' has the wrong type. Received: 'email_invalido'. Expected: 'valid email'."
 
-    #TEMP: desabilitado — incompatível com nova entidade User (id/email/role/senha_hash)
     def test_update_user_not_found(self):
         repo = UserRepositoryMock()
         usecase = UpdateUserUsecase(repo=repo)

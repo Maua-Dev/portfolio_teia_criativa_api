@@ -66,7 +66,7 @@ class Test_CreateUserController:
         assert response.status_code == 400
         assert "email" in response.body
 
-    def test_create_user_controller_wrong_type_senha_hash(self):
+    def test_create_user_controller_wrong_type_user_name(self):
         repo = UserRepositoryMock()
         usecase = CreateUserUsecase(repo=repo)
         controller = CreateUserController(usecase=usecase)

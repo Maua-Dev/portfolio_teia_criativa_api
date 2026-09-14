@@ -1,4 +1,3 @@
-#TEMP: arquivo desabilitado — fora do escopo desta branch / incompatível com contrato atual
 from src.modules.update_user.app.update_user_viewmodel import UpdateUserViewmodel
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.role_enum import RoleEnum

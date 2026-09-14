@@ -4,7 +4,6 @@ from src.shared.domain.enums.role_enum import RoleEnum
 
 class CreateUserViewmodel:
     id: str
-    name: str
     email: str
     role: RoleEnum
     active: bool
@@ -14,8 +13,8 @@ class CreateUserViewmodel:
         self.id = str(user.id)
         self.email = user.email
         self.role = user.role
-        self.active= user.active
-        self.user_name=user.user_name
+        self.active = user.active
+        self.user_name = user.user_name
 
     def to_dict(self):
         return {
@@ -24,6 +23,5 @@ class CreateUserViewmodel:
             'role': self.role.value,
             'active': self.active,
             'user_name': self.user_name,
-
             'message': "the user was created successfully"
         }

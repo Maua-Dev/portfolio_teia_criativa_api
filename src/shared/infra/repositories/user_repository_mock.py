@@ -28,6 +28,7 @@ class UserRepositoryMock(IUserRepository):
             User(
                 id=uuid.UUID("c1a52f40-0135-406d-b5d7-7ed5dce9bc90"),
                 email="bruno@bruno.com",
+                role=RoleEnum.USER,
                 active=True,
                 user_name="username_3"
             )

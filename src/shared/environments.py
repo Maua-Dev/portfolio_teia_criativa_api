@@ -83,6 +83,9 @@ class Environments:
         if Environments.get_envs().stage == STAGE.TEST:
             from src.shared.infra.repositories.project_repository_mock import ProjectRepositoryMock
             return ProjectRepositoryMock
+        elif Environments.get_envs().stage in [STAGE.DEV, STAGE.HOMOLOG, STAGE.PROD]:
+            from src.shared.infra.repositories.project_repository_dynamo import ProjectRepositoryDynamo
+            return ProjectRepositoryDynamo
         else:
             raise Exception("No project repository found for this stage")
 

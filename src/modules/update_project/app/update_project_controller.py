@@ -29,7 +29,30 @@ class UpdateProjectController:
                     fieldTypeReceived=request.data.get('project_id').__class__.__name__
                 )
 
-            project = self.UpdateProjectUsecase(project_id=str(request.data.get('project_id')), new_title=request.data.get('new_title'), new_description=request.data.get('new_description'))
+            if type(request.data.get('new_title')) != str:
+                raise WrongTypeParameter(
+                    fieldName="new_title",
+                    fieldTypeExpected="str",
+                    fieldTypeReceived=request.data.get('new_title').__class__.__name__
+                )
+
+            if type(request.data.get('new_description')) != str:
+                raise WrongTypeParameter(
+                    fieldName="new_description",
+                    fieldTypeExpected="str",
+                    fieldTypeReceived=request.data.get('new_description').__class__.__name__
+                )
+
+            try:
+                project_id = uuid.UUID(request.data.get('project_id'))
+            except ValueError:
+                raise EntityError("project_id")
+
+            project = self.UpdateProjectUsecase(
+                project_id=project_id,
+                new_title=request.data.get('new_title'),
+                new_description=request.data.get('new_description')
+            )
 
             viewmodel = UpdateProjectViewmodel(project=project)
 

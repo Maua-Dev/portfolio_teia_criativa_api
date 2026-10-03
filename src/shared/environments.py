@@ -3,6 +3,7 @@ from enum import Enum
 import os
 from src.shared.domain.observability.observability_interface import IObservability
 
+from src.shared.domain.repositories.member_repository_interface import IMemberRepository
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.domain.repositories.project_repository_interface import IProjectRepository
 from src.shared.infra.external.dynamo.dynamo_keys import PK_ATTR, SK_ATTR
@@ -78,7 +79,7 @@ class Environments:
             raise Exception("No repository found for this stage")
         
     @staticmethod
-    def get_member_repo() -> IUserRepository:
+    def get_member_repo() -> IMemberRepository:
         if Environments.get_envs().stage == STAGE.TEST:
             from src.shared.infra.repositories.member_repository_mock import MemberRepositoryMock
             return MemberRepositoryMock

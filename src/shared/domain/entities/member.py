@@ -12,3 +12,5 @@ class Member(BaseModel):
         if not str(v).lower().endswith(".jpg"):
             raise ValueError("A foto do membro deve ter a extensão .jpg")
         return v
+
+# forçando a leitura do git

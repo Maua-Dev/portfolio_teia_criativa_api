@@ -55,6 +55,10 @@ class IacStack(Stack):
             "DYNAMO_SORT_KEY": "sk",
             "MSS_NAME": stack_name,
             "ENTITY_ASSETS_BUCKET_NAME": self.s3_construct.entity_assets_bucket.bucket_name,
+            "GRAPH_MICROSOFT_ENDPOINT": os.environ.get(
+                "GRAPH_MICROSOFT_ENDPOINT",
+                "https://graph.microsoft.com/v1.0/me",
+            ),
         }
 
         self.lambda_construct = LambdaConstruct(

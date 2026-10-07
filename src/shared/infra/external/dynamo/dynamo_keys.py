@@ -22,6 +22,7 @@ STORAGE_KEY_ATTRS = (
 class EntityKind(str, Enum):
     USER = "USER"
     PROJECT = "PROJECT"
+    MEMBER = "MEMBER"
 
 
 def partition_key(kind: EntityKind) -> str:

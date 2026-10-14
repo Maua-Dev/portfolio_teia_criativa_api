@@ -39,7 +39,7 @@ class CreateMemberController:
             if member_intro is None:
                 raise MissingParameters('member_intro')
 
-            if not isinstance(member_intro):
+            if not isinstance(member_intro, str):
                 raise WrongTypeParameter(
                     fieldName='member_intro',
                     fieldTypeExpected='str',

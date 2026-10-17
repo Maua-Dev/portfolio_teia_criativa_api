@@ -1,6 +1,9 @@
 from typing import List
+from uuid import UUID
+
 from src.shared.domain.entities.member import Member
 from src.shared.domain.repositories.member_repository_interface import IMemberRepository
+from src.shared.helpers.errors.usecase_errors import NoItemsFound
 
 class MemberRepositoryMock(IMemberRepository):
     members: List[Member]
@@ -20,6 +23,12 @@ class MemberRepositoryMock(IMemberRepository):
                 member_intro="UI/UX Designer"
             )
         ]
+
+    def get_member(self, member_id: UUID) -> Member:
+        for member in self.members:
+            if str(member.member_id) == str(member_id):
+                return member
+        raise NoItemsFound("member_id")
 
     def get_all_members(self) -> List[Member]:
         return self.members

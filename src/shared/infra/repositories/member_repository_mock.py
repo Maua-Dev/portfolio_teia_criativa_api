@@ -1,6 +1,10 @@
 from typing import List
+from uuid import UUID
+
 from src.shared.domain.entities.member import Member
 from src.shared.domain.repositories.member_repository_interface import IMemberRepository
+from src.shared.helpers.errors.usecase_errors import NoItemsFound
+
 
 class MemberRepositoryMock(IMemberRepository):
     members: List[Member]
@@ -21,9 +25,28 @@ class MemberRepositoryMock(IMemberRepository):
             )
         ]
 
+    def get_member(self, member_id: UUID) -> Member:
+        for member in self.members:
+            if str(member.member_id) == str(member_id):
+                return member
+        raise NoItemsFound("member_id")
+
     def get_all_members(self) -> List[Member]:
         return self.members
 
     def create_member(self, member: Member) -> Member:
         self.members.append(member)
         return member
+
+    def delete_member(self, member_id: UUID) -> Member:
+        for idx, member in enumerate(self.members):
+            if str(member.member_id) == str(member_id):
+                return self.members.pop(idx)
+        raise NoItemsFound("member_id")
+
+    def update_member(self, member: Member) -> Member:
+        for idx, existing_member in enumerate(self.members):
+            if existing_member.member_id == member.member_id:
+                self.members[idx] = member
+                return member
+        raise NoItemsFound("member_id")

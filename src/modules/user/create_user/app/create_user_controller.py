@@ -1,10 +1,13 @@
+from uuid import UUID
+
 from src.shared.helpers.external_interfaces.external_interface import IResponse, IRequest
 from .create_user_usecase import CreateUserUsecase
 from .create_user_viewmodel import CreateUserViewmodel
+from src.shared.helpers.auth.authorizer_user import USER_FROM_AUTHORIZER_KEY
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
-from src.shared.helpers.errors.usecase_errors import NoItemsFound
-from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadRequest, InternalServerError, Created
+from src.shared.helpers.errors.usecase_errors import ForbiddenAction, NoItemsFound
+from src.shared.helpers.external_interfaces.http_codes import NotFound, BadRequest, Created, Forbidden, InternalServerError
 
 
 class CreateUserController:
@@ -26,10 +29,29 @@ class CreateUserController:
             if type(user_name) != str:
                 raise WrongTypeParameter(fieldName='user_name', fieldTypeExpected=str, fieldTypeReceived=type(user_name))
 
+            user_from_authorizer = request.data.get(USER_FROM_AUTHORIZER_KEY)
+            if user_from_authorizer is None:
+                raise MissingParameters(USER_FROM_AUTHORIZER_KEY)
+
+            requester_user_id = user_from_authorizer.get("sub")
+            if requester_user_id is None:
+                raise MissingParameters("sub")
+            if not isinstance(requester_user_id, str):
+                raise WrongTypeParameter(
+                    fieldName="sub",
+                    fieldTypeExpected="str",
+                    fieldTypeReceived=type(requester_user_id).__name__
+                )
+
+            try:
+                parsed_requester_user_id = UUID(requester_user_id)
+            except ValueError:
+                raise EntityError("user_id")
 
             user = self.CreateUserUsecase(
                 email=email,
-                user_name=user_name
+                user_name=user_name,
+                requester_user_id=parsed_requester_user_id,
             )
 
             viewmodel = CreateUserViewmodel(user)
@@ -38,6 +60,9 @@ class CreateUserController:
 
         except NoItemsFound as err:
             return NotFound(body=err.message)
+
+        except ForbiddenAction as err:
+            return Forbidden(body=err.message)
 
         except MissingParameters as err:
             return BadRequest(body=err.message)

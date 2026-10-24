@@ -2,13 +2,16 @@ import json
 
 from src.modules.user.update_user.app import update_user_presenter as presenter_module
 from src.modules.user.update_user.app.update_user_presenter import lambda_handler
+from src.shared.domain.enums.role_enum import RoleEnum
 
 
 class Test_UpdateUserPresenter:
 
     def test_update_user(self):
 
-        target_user = presenter_module.repo.users[0]
+        admin = presenter_module.repo.users[0].model_copy(update={"role": RoleEnum.ADMIN})
+        presenter_module.repo.users[0] = admin
+        target_user = presenter_module.repo.users[1]
 
         event = {
             "version": "2.0",
@@ -31,6 +34,11 @@ class Test_UpdateUserPresenter:
                 "apiId": "<urlid>",
                 "authentication": None,
                 "authorizer": {
+                    "user": json.dumps({
+                        "sub": str(admin.id),
+                        "mail": admin.email,
+                        "name": admin.user_name,
+                    }),
                     "iam": {
                         "accessKey": "AKIA...",
                         "accountId": "111122223333",

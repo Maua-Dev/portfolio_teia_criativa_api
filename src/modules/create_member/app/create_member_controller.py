@@ -63,7 +63,7 @@ class CreateMemberController:
                 member_photo=member_photo,
                 member_name=member_name,
                 member_intro=member_intro,
-                requester_email=self._requester_email(request)
+                requester_id=self._get_requester_id(request)
             )
 
             viewmodel = CreateMemberViewModel(member)
@@ -91,10 +91,10 @@ class CreateMemberController:
             return InternalServerError(body=err)
 
     @staticmethod
-    def _requester_email(request: IRequest) -> str | None:
+    def _get_requester_id(request: IRequest) -> str | None:
         authorizer_user = request.data.get(USER_FROM_AUTHORIZER_KEY)
         if not isinstance(authorizer_user, dict):
             return None
 
-        email = authorizer_user.get("mail")
-        return email if isinstance(email, str) else None
+        sub = authorizer_user.get("sub", None)
+        return sub if isinstance(sub, str) else None

@@ -33,7 +33,7 @@ class Test_CreateMemberPresenter:
                 "authentication": None,
                 "authorizer": {
                     "user": json.dumps({
-                        "sub": "ms-admin",
+                        "sub": str(admin_user.id),
                         "mail": "soller@soller.com",
                         "name": "Admin",
                     }),

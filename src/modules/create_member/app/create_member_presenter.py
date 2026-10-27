@@ -6,11 +6,14 @@ from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHt
 from src.shared.environments import Environments
 from pprint import pprint
 
+from src.shared.helpers.observability.wrap_handler import observed_handler
+
 repo = Environments.get_member_repo()()
 user_repo: IUserRepository = Environments.get_user_repo()()
 usecase = CreateMemberUsecase(repo, user_repo)
 controller = CreateMemberController(usecase)
 
+@observed_handler("create_member")
 def lambda_handler(event, context):
 
     pprint(event)

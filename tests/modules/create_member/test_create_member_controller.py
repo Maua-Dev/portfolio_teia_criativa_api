@@ -17,9 +17,9 @@ class TestCreateMemberController:
         return CreateMemberController(usecase=usecase)
 
     @staticmethod
-    def _request(body):
+    def _request(body, requester_id="af852f40-0135-406d-b5d7-7ed5dce9bc8e"):
         request = HttpRequest(body=body)
-        request.data[USER_FROM_AUTHORIZER_KEY] = {"mail": "soller@soller.com"}
+        request.data[USER_FROM_AUTHORIZER_KEY] = {"sub": requester_id}
         return request
 
     def test_create_member_controller(self):
@@ -144,4 +144,5 @@ class TestCreateMemberController:
 
         response = controller(request=request)
 
-        assert response.status_code == 403
+        assert response.status_code == 400
+        assert response.body == 'Field requester_id is not valid'

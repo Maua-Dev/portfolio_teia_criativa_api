@@ -11,4 +11,8 @@ class WrongTypeParameter(BaseError):
             f"Received: '{fieldTypeReceived}'. Expected: '{fieldTypeExpected}'."
         )
         super().__init__(message)
+
+class InvalidImageUrl(BaseError):
+    def __init__(self, message: str):
+        super().__init__(message)
    

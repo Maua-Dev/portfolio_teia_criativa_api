@@ -1,4 +1,4 @@
-from pydantic import UUID4, HttpUrl
+
 
 from src.shared.domain.entities.member import Member
 
@@ -21,7 +21,7 @@ class CreateMemberViewModel:
             'member_photo': self.member_photo,
             'member_name' : self.member_name,
             'member_intro' : self.member_intro,
-            'message' : "the member was created succefully"
+            'message' : "the member was created successfully"
         }
         
 

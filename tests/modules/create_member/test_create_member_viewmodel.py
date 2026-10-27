@@ -20,5 +20,5 @@ class Test_CreateMemberViewModel:
             'member_photo': str(member.member_photo),
             'member_name': 'nome_membro',
             'member_intro': 'intro_membro',
-            'message': 'the member was created succefully'
+            'message': 'the member was created successfully'
         }

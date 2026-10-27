@@ -1,6 +1,8 @@
+from urllib.parse import urlparse
+
 from src.modules.create_member.app.create_member_usecase import CreateMemberUsecase
 from src.modules.create_member.app.create_member_viewmodel import CreateMemberViewModel
-from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
+from src.shared.helpers.errors.controller_errors import InvalidImageUrl, MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
@@ -20,11 +22,21 @@ class CreateMemberController:
             if member_photo is None:
                 raise MissingParameters('member_photo')
 
-            if type(member_photo) != str:
+            if not isinstance(member_photo, str):
                 raise WrongTypeParameter(
                     fieldName='member_photo',
                     fieldTypeExpected='str',
                     fieldTypeReceived=type(member_photo).__name__
+                )
+
+            parsed_url = urlparse(member_photo)
+            if (
+                parsed_url.scheme not in ("http", "https")
+                or not parsed_url.netloc
+                or not parsed_url.path.lower().endswith((".jpg", ".jpeg"))
+            ):
+                raise InvalidImageUrl(
+                    "member_photo must be a valid URL pointing to a JPG or JPEG image"
                 )
 
             if member_name is None:
@@ -62,6 +74,9 @@ class CreateMemberController:
             return BadRequest(body=err.message)
 
         except WrongTypeParameter as err:
+            return BadRequest(body=err.message)
+
+        except InvalidImageUrl as err:
             return BadRequest(body=err.message)
 
         except EntityError as err:

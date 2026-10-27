@@ -24,7 +24,7 @@ class TestCreateMemberController:
         assert response.body['member_photo'] == 'https://picsum.photos/800/600.jpg'
         assert response.body['member_name'] == 'nome_membro'
         assert response.body['member_intro'] == 'intro_membro'
-        assert response.body['message'] == 'the member was created succefully'
+        assert response.body['message'] == 'the member was created successfully'
 
     def test_create_member_controller_missing_member_photo(self):
         repo = MemberRepositoryMock()
@@ -40,6 +40,22 @@ class TestCreateMemberController:
 
         assert response.status_code == 400
         assert response.body == 'Field member_photo is missing'
+
+    def test_create_member_controller_with_wrong_photo_url(self):
+        repo = MemberRepositoryMock()
+        usecase = CreateMemberUsecase(repo=repo)
+        controller = CreateMemberController(usecase=usecase)
+
+        request = HttpRequest(body={
+            'member_name': 'nome_membro',
+            'member_intro': 'intro_membro',
+            'member_photo': 'https://example.com/image.png'
+        })
+
+        response = controller(request=request)
+
+        assert response.status_code == 400
+        assert response.body == "member_photo must be a valid URL pointing to a JPG or JPEG image"
 
     def test_create_member_controller_missing_member_name(self):
         repo = MemberRepositoryMock()
@@ -118,5 +134,4 @@ class TestCreateMemberController:
 
         assert response.status_code == 400
         assert response.body == "The field 'member_intro' has the wrong type. Received: 'int'. Expected: 'str'."
-
 

@@ -62,4 +62,4 @@ class Test_CreateMemberPresenter:
         assert str(body["member_photo"]) == "https://picsum.photos/800/600.jpg"
         assert body["member_name"] == "nome_membro"
         assert body["member_intro"] == "intro_membro"
-        assert body["message"] == "the member was created succefully"
+        assert body["message"] == "the member was created successfully"

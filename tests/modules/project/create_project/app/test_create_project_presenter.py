@@ -1,10 +1,15 @@
 import json
 
+from src.modules.project.create_project.app import create_project_presenter as presenter_module
 from src.modules.project.create_project.app.create_project_presenter import lambda_handler
+from src.shared.domain.enums.role_enum import RoleEnum
 
 
 class Test_CreateProjectPresenter:
     def test_create_project(self):
+        admin = presenter_module.user_repo.users[0].model_copy(update={"role": RoleEnum.ADMIN})
+        presenter_module.user_repo.users[0] = admin
+
         event = {
             "version": "2.0",
             "routeKey": "$default",
@@ -17,6 +22,13 @@ class Test_CreateProjectPresenter:
             "requestContext": {
                 "accountId": "123456789012",
                 "apiId": "<urlid>",
+                "authorizer": {
+                    "user": json.dumps({
+                        "sub": str(admin.id),
+                        "mail": admin.email,
+                        "name": admin.user_name,
+                    })
+                },
                 "http": {
                     "method": "POST",
                     "path": "/my/path",

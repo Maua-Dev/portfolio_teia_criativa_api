@@ -46,4 +46,17 @@ class Test_CreateUserUsecase:
                 requester_user_id=repo.users[0].id,
             )
 
+    def test_create_user_usecase_forbidden_for_inactive_admin(self):
+        repo = UserRepositoryMock()
+        repo.users[0] = repo.users[0].model_copy(
+            update={"role": RoleEnum.ADMIN, "active": False}
+        )
+        usecase = CreateUserUsecase(repo=repo)
+
+        with pytest.raises(ForbiddenAction):
+            usecase(
+                email="novo_user@teste.com",
+                user_name="user_name_test1",
+                requester_user_id=repo.users[0].id,
+            )
 

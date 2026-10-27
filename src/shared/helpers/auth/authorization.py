@@ -8,5 +8,5 @@ from src.shared.helpers.errors.usecase_errors import ForbiddenAction
 def require_admin(user_repo: IUserRepository, requester_user_id: UUID) -> None:
     requester = user_repo.get_user(requester_user_id)
 
-    if requester.role != RoleEnum.ADMIN and requester.active != True:
+    if requester.role != RoleEnum.ADMIN or not requester.active:
         raise ForbiddenAction("user")

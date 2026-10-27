@@ -39,3 +39,20 @@ class Test_CreateProjectUsecase:
                 display_image=None,
                 requester_user_id=user_repo.users[0].id,
             )
+
+    def test_create_project_forbidden_for_inactive_admin(self):
+        repo = ProjectRepositoryMock()
+        user_repo = UserRepositoryMock()
+        user_repo.users[0] = user_repo.users[0].model_copy(
+            update={"role": RoleEnum.ADMIN, "active": False}
+        )
+        usecase = CreateProjectUsecase(repo, user_repo)
+
+        with pytest.raises(ForbiddenAction):
+            usecase(
+                title="Novo projeto",
+                description="Projeto criado no teste",
+                associates=None,
+                display_image=None,
+                requester_user_id=user_repo.users[0].id,
+            )

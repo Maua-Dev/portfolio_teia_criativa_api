@@ -121,6 +121,25 @@ class Test_CreateUserController:
         assert response.status_code == 403
         assert response.body == "That action is forbidden for this user"
 
+    def test_create_user_controller_forbidden_for_inactive_admin(self):
+        repo = UserRepositoryMock()
+        repo.users[0] = repo.users[0].model_copy(
+            update={"role": RoleEnum.ADMIN, "active": False}
+        )
+        usecase = CreateUserUsecase(repo=repo)
+        controller = CreateUserController(usecase=usecase)
+
+        request = HttpRequest(body={
+            'email': 'teste_controller@teste.com',
+            'user_name': 'user_name_test1',
+            USER_FROM_AUTHORIZER_KEY: {"sub": str(repo.users[0].id)},
+        })
+
+        response = controller(request=request)
+
+        assert response.status_code == 403
+        assert response.body == "That action is forbidden for this user"
+
     #def test_create_user_controller_invalid_email(self):
         #repo = UserRepositoryMock()
         #usecase = CreateUserUsecase(repo=repo)

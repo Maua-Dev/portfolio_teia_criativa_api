@@ -107,3 +107,23 @@ class Test_CreateProjectController:
 
         assert response.status_code == 403
         assert response.body == "That action is forbidden for this user"
+
+    def test_create_project_controller_forbidden_for_inactive_admin(self):
+        repo = ProjectRepositoryMock()
+        user_repo = UserRepositoryMock()
+        user_repo.users[0] = user_repo.users[0].model_copy(
+            update={"role": RoleEnum.ADMIN, "active": False}
+        )
+        usecase = CreateProjectUsecase(repo=repo, user_repo=user_repo)
+        controller = CreateProjectController(usecase=usecase)
+
+        request = HttpRequest(body={
+            'title': 'Novo projeto',
+            'description': 'Projeto criado no teste',
+            USER_FROM_AUTHORIZER_KEY: {"sub": str(user_repo.users[0].id)},
+        })
+
+        response = controller(request=request)
+
+        assert response.status_code == 403
+        assert response.body == "That action is forbidden for this user"

@@ -1,10 +1,19 @@
 import json
 
-from src.modules.create_member.app.create_member_presenter import lambda_handler
+from src.modules.create_member.app import create_member_presenter
+from src.shared.domain.enums.role_enum import RoleEnum
 
 
 class Test_CreateMemberPresenter:
-    def test_create_member_presenter(self):
+    def test_create_member_presenter(self, monkeypatch):
+        admin_user = create_member_presenter.user_repo.users[0].model_copy(
+            update={"role": RoleEnum.ADMIN}
+        )
+        monkeypatch.setattr(
+            create_member_presenter.user_repo,
+            "users",
+            [admin_user, *create_member_presenter.user_repo.users[1:]],
+        )
         event = {
             "version": "2.0",
             "routeKey": "$default",
@@ -23,6 +32,11 @@ class Test_CreateMemberPresenter:
                 "apiId": "<urlid>",
                 "authentication": None,
                 "authorizer": {
+                    "user": json.dumps({
+                        "sub": "ms-admin",
+                        "mail": "soller@soller.com",
+                        "name": "Admin",
+                    }),
                     "iam": {
                         "accessKey": "AKIA...",
                         "accountId": "111122223333",
@@ -54,7 +68,7 @@ class Test_CreateMemberPresenter:
             "stageVariables": None
         }
 
-        response = lambda_handler(event, None)
+        response = create_member_presenter.lambda_handler(event, None)
 
         assert response["statusCode"] == 201
 

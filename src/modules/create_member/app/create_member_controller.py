@@ -2,11 +2,12 @@ from urllib.parse import urlparse
 
 from src.modules.create_member.app.create_member_usecase import CreateMemberUsecase
 from src.modules.create_member.app.create_member_viewmodel import CreateMemberViewModel
+from src.shared.helpers.auth.authorizer_user import USER_FROM_AUTHORIZER_KEY
 from src.shared.helpers.errors.controller_errors import InvalidImageUrl, MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
-from src.shared.helpers.errors.usecase_errors import NoItemsFound
+from src.shared.helpers.errors.usecase_errors import ForbiddenAction, NoItemsFound
 from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
-from src.shared.helpers.external_interfaces.http_codes import BadRequest, Created, InternalServerError, NotFound
+from src.shared.helpers.external_interfaces.http_codes import BadRequest, Created, Forbidden, InternalServerError, NotFound
 
 
 class CreateMemberController:
@@ -61,7 +62,8 @@ class CreateMemberController:
             member = self.CreateMemberUsecase(
                 member_photo=member_photo,
                 member_name=member_name,
-                member_intro=member_intro
+                member_intro=member_intro,
+                requester_email=self._requester_email(request)
             )
 
             viewmodel = CreateMemberViewModel(member)
@@ -69,7 +71,10 @@ class CreateMemberController:
 
         except NoItemsFound as err:
             return NotFound(body=err.message)
-        
+
+        except ForbiddenAction as err:
+            return Forbidden(body=err.message)
+
         except MissingParameters as err:
             return BadRequest(body=err.message)
 
@@ -85,6 +90,11 @@ class CreateMemberController:
         except Exception as err:
             return InternalServerError(body=err)
 
-    
+    @staticmethod
+    def _requester_email(request: IRequest) -> str | None:
+        authorizer_user = request.data.get(USER_FROM_AUTHORIZER_KEY)
+        if not isinstance(authorizer_user, dict):
+            return None
 
-    
+        email = authorizer_user.get("mail")
+        return email if isinstance(email, str) else None

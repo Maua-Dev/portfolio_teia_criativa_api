@@ -3,14 +3,38 @@ import uuid
 from pydantic import HttpUrl
 
 from src.shared.domain.entities.member import Member
+from src.shared.domain.enums.role_enum import RoleEnum
 from src.shared.domain.repositories.member_repository_interface import IMemberRepository
+from src.shared.domain.repositories.user_repository_interface import IUserRepository
+from src.shared.helpers.errors.usecase_errors import ForbiddenAction
 
 
 class CreateMemberUsecase:
-    def __init__(self, repo: IMemberRepository): 
+    def __init__(self, repo: IMemberRepository, user_repo: IUserRepository):
         self.repo = repo
+        self.user_repo = user_repo
 
-    def __call__(self, member_photo: HttpUrl, member_name: str, member_intro: str):
+    def __call__(
+        self,
+        member_photo: HttpUrl,
+        member_name: str,
+        member_intro: str,
+        requester_email: str | None,
+    ):
+        if not isinstance(requester_email, str) or not requester_email.strip():
+            raise ForbiddenAction("Create Member")
+
+        requester = next(
+            (
+                user
+                for user in self.user_repo.get_all_user()
+                if str(user.email).casefold() == requester_email.casefold()
+            ),
+            None,
+        )
+        if requester is None or not requester.active or requester.role != RoleEnum.ADMIN:
+            raise ForbiddenAction("Create Member")
+
         member = Member(
             member_id=uuid.uuid4(),
             member_photo=member_photo,

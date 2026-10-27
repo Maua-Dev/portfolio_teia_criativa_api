@@ -141,3 +141,22 @@ class Test_UpdateUserController:
 
         assert response.status_code == 403
         assert response.body == "That action is forbidden for this user"
+
+    def test_update_user_controller_forbidden_for_inactive_admin(self):
+        repo = UserRepositoryMock()
+        repo.users[0] = repo.users[0].model_copy(
+            update={"role": RoleEnum.ADMIN, "active": False}
+        )
+        usecase = UpdateUserUsecase(repo=repo)
+        controller = UpdateUserController(usecase=usecase)
+
+        request = HttpRequest(body={
+            'user_id': str(repo.users[1].id),
+            'new_email': 'testeemail@devmaua.com.br',
+            USER_FROM_AUTHORIZER_KEY: {"sub": str(repo.users[0].id)},
+        })
+
+        response = controller(request=request)
+
+        assert response.status_code == 403
+        assert response.body == "That action is forbidden for this user"

@@ -39,3 +39,19 @@ class Test_UpdateProjectUsecase:
                 new_description="Descrição atualizada",
                 requester_user_id=user_repo.users[0].id,
             )
+
+    def test_update_project_forbidden_for_inactive_admin(self):
+        repo = ProjectRepositoryMock()
+        user_repo = UserRepositoryMock()
+        user_repo.users[0] = user_repo.users[0].model_copy(
+            update={"role": RoleEnum.ADMIN, "active": False}
+        )
+        usecase = UpdateProjectUsecase(repo=repo, user_repo=user_repo)
+
+        with pytest.raises(ForbiddenAction):
+            usecase(
+                project_id=repo.projects[0].id,
+                new_title="Projeto atualizado",
+                new_description="Descrição atualizada",
+                requester_user_id=user_repo.users[0].id,
+            )

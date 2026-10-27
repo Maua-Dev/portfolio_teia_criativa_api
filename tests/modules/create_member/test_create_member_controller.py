@@ -58,13 +58,13 @@ class TestCreateMemberController:
         request = self._request({
             'member_name': 'nome_membro',
             'member_intro': 'intro_membro',
-            'member_photo': 'https://example.com/image.png'
+            'member_photo': 'https://example.com/image.bmp'
         })
 
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == "member_photo must be a valid URL pointing to a JPG or JPEG image"
+        assert response.body == "member_photo must be a valid URL pointing to a JPG, JPEG, PNG or WEBP image"
 
     def test_create_member_controller_missing_member_name(self):
         controller = self._create_controller()

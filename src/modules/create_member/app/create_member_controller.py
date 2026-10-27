@@ -34,10 +34,10 @@ class CreateMemberController:
             if (
                 parsed_url.scheme not in ("http", "https")
                 or not parsed_url.netloc
-                or not parsed_url.path.lower().endswith((".jpg", ".jpeg"))
+                or not parsed_url.path.lower().endswith((".jpg", ".jpeg", ".png", ".webp"))
             ):
                 raise InvalidImageUrl(
-                    "member_photo must be a valid URL pointing to a JPG or JPEG image"
+                    "member_photo must be a valid URL pointing to a JPG, JPEG, PNG or WEBP image"
                 )
 
             if member_name is None:

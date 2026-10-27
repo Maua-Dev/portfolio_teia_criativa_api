@@ -36,7 +36,7 @@ class Test_CreateMemberUsecase:
 
         with pytest.raises(ValueError):
             usecase(
-                member_photo='https://picsum.photos/800/600.png',
+                member_photo='https://picsum.photos/800/600.bmp',
                 member_name='nome_membro',
                 member_intro='intro_membro',
                 requester_id=str(user_repo.users[0].id)

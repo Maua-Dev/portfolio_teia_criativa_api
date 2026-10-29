@@ -1,7 +1,7 @@
 import pytest
 from pydantic import HttpUrl
 
-from src.modules.create_member.app.create_member_usecase import CreateMemberUsecase
+from src.modules.member.create_member.app.create_member_usecase import CreateMemberUsecase
 from src.shared.domain.enums.role_enum import RoleEnum
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import ForbiddenAction

@@ -1,4 +1,4 @@
-from src.modules.create_member.app.create_member_viewmodel import CreateMemberViewModel
+from src.modules.member.create_member.app.create_member_viewmodel import CreateMemberViewModel
 from src.shared.domain.entities.member import Member
 
 

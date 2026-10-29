@@ -5,17 +5,18 @@ from src.modules.microsoft_authorizer.app import microsoft_authorizer_presenter 
 from src.modules.microsoft_authorizer.app.microsoft_authorizer_presenter import lambda_handler
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.role_enum import RoleEnum
+from src.shared.helpers.errors.external_errors import JwtVerificationError
 
 
-class _FakeGraphClient:
-    def __init__(self, profile: dict | None = None, error: Exception | None = None):
-        self.profile = profile or {}
+class _FakeJwtVerifier:
+    def __init__(self, claims: dict | None = None, error: Exception | None = None):
+        self.claims = claims or {}
         self.error = error
 
-    def get_user_profile(self, access_token: str) -> dict:
+    def verify_and_decode(self, token: str) -> dict:
         if self.error is not None:
             raise self.error
-        return self.profile
+        return self.claims
 
 
 class Test_MicrosoftAuthorizerPresenter:
@@ -28,11 +29,11 @@ class Test_MicrosoftAuthorizerPresenter:
             role=RoleEnum.USER,
             user_name="Soller",
         )
-        presenter_module.usecase.graph_client = _FakeGraphClient(
-            profile={
-                "id": str(user_id),
+        presenter_module.usecase.jwt_verifier = _FakeJwtVerifier(
+            claims={
+                "sub": str(user_id),
                 "mail": "21.00000-0@maua.br",
-                "displayName": "Soller",
+                "name": "Soller",
             }
         )
 
@@ -48,9 +49,9 @@ class Test_MicrosoftAuthorizerPresenter:
         assert response["policyDocument"]["Statement"][0]["Effect"] == "Allow"
         assert json.loads(response["context"]["user"])["mail"] == "21.00000-0@maua.br"
 
-    def test_presenter_denies_when_graph_fails(self):
-        presenter_module.usecase.graph_client = _FakeGraphClient(
-            error=Exception("graph down")
+    def test_presenter_denies_when_jwt_verify_fails(self):
+        presenter_module.usecase.jwt_verifier = _FakeJwtVerifier(
+            error=JwtVerificationError("invalid signature")
         )
 
         response = lambda_handler(
@@ -66,11 +67,11 @@ class Test_MicrosoftAuthorizerPresenter:
 
     def test_presenter_allows_onboarding_route(self):
         new_id = str(uuid.uuid4())
-        presenter_module.usecase.graph_client = _FakeGraphClient(
-            profile={
-                "id": new_id,
+        presenter_module.usecase.jwt_verifier = _FakeJwtVerifier(
+            claims={
+                "sub": new_id,
                 "mail": "21.99999-9@maua.br",
-                "displayName": "Novo User",
+                "name": "Novo User",
             }
         )
 

@@ -6,28 +6,29 @@ from src.modules.microsoft_authorizer.app.microsoft_authorizer_usecase import (
 )
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.role_enum import RoleEnum
+from src.shared.helpers.errors.external_errors import JwtVerificationError
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
 
-class _FakeGraphClient:
-    def __init__(self, profile: dict | None = None, error: Exception | None = None):
-        self.profile = profile or {}
+class _FakeJwtVerifier:
+    def __init__(self, claims: dict | None = None, error: Exception | None = None):
+        self.claims = claims or {}
         self.error = error
         self.last_token = None
 
-    def get_user_profile(self, access_token: str) -> dict:
-        self.last_token = access_token
+    def verify_and_decode(self, token: str) -> dict:
+        self.last_token = token
         if self.error is not None:
             raise self.error
-        return self.profile
+        return self.claims
 
 
 class Test_MicrosoftAuthorizerUsecase:
 
-    def _usecase(self, profile: dict, repo: UserRepositoryMock | None = None):
+    def _usecase(self, claims: dict, repo: UserRepositoryMock | None = None):
         repo = repo or UserRepositoryMock()
         return MicrosoftAuthorizerUsecase(
-            graph_client=_FakeGraphClient(profile=profile),
+            jwt_verifier=_FakeJwtVerifier(claims=claims),
             user_repo=repo,
         ), repo
 
@@ -42,9 +43,9 @@ class Test_MicrosoftAuthorizerUsecase:
         )
         usecase, _ = self._usecase(
             {
-                "id": str(user_id),
+                "sub": str(user_id),
                 "mail": "21.00000-0@maua.br",
-                "displayName": "Soller",
+                "name": "Soller",
             },
             repo=repo,
         )
@@ -66,9 +67,9 @@ class Test_MicrosoftAuthorizerUsecase:
     def test_deny_when_user_missing_on_protected_route(self):
         usecase, _ = self._usecase(
             {
-                "id": str(uuid.uuid4()),
+                "sub": str(uuid.uuid4()),
                 "mail": "21.00000-0@maua.br",
-                "displayName": "Novo",
+                "name": "Novo",
             }
         )
 
@@ -84,9 +85,9 @@ class Test_MicrosoftAuthorizerUsecase:
         user_id = str(uuid.uuid4())
         usecase, _ = self._usecase(
             {
-                "id": user_id,
+                "sub": user_id,
                 "mail": "21.00000-0@maua.br",
-                "displayName": "Novo",
+                "name": "Novo",
             }
         )
 
@@ -104,9 +105,9 @@ class Test_MicrosoftAuthorizerUsecase:
     def test_deny_non_maua_email(self):
         usecase, _ = self._usecase(
             {
-                "id": str(uuid.uuid4()),
+                "sub": str(uuid.uuid4()),
                 "mail": "user@gmail.com",
-                "displayName": "External",
+                "name": "External",
             }
         )
 
@@ -120,9 +121,9 @@ class Test_MicrosoftAuthorizerUsecase:
     def test_deny_invalid_uuid_sub(self):
         usecase, _ = self._usecase(
             {
-                "id": "not-a-uuid",
+                "sub": "not-a-uuid",
                 "mail": "21.00000-0@maua.br",
-                "displayName": "Nome",
+                "name": "Nome",
             }
         )
 
@@ -133,48 +134,38 @@ class Test_MicrosoftAuthorizerUsecase:
 
         assert policy["policyDocument"]["Statement"][0]["Effect"] == "Deny"
 
-    def test_uses_user_principal_name_when_mail_missing(self):
-        user_id = uuid.UUID("af852f40-0135-406d-b5d7-7ed5dce9bc8e")
+    def test_deny_invalid_jwt_signature(self):
         repo = UserRepositoryMock()
-        repo.users[0] = User(
-            id=user_id,
-            email="21.00000-0@maua.br",
-            role=RoleEnum.USER,
-            user_name="Soller",
-        )
-        usecase, _ = self._usecase(
-            {
-                "id": str(user_id),
-                "userPrincipalName": "21.00000-0@maua.br",
-                "displayName": "Soller",
-            },
-            repo=repo,
+        usecase = MicrosoftAuthorizerUsecase(
+            jwt_verifier=_FakeJwtVerifier(
+                error=JwtVerificationError("invalid signature")
+            ),
+            user_repo=repo,
         )
 
         policy = usecase(
-            authorization_token="token",
-            method_arn="arn:aws:execute-api:sa-east-1:123:api/GET/users",
+            authorization_token="Bearer bad.token.here",
+            method_arn="arn:aws:execute-api:sa-east-1:123:api/POST/auth",
         )
 
-        assert policy["policyDocument"]["Statement"][0]["Effect"] == "Allow"
-        assert json.loads(policy["context"]["user"])["mail"] == "21.00000-0@maua.br"
+        assert policy["policyDocument"]["Statement"][0]["Effect"] == "Deny"
 
-    def test_strips_bearer_prefix_before_graph_call(self):
-        graph = _FakeGraphClient(
-            profile={
-                "id": str(uuid.uuid4()),
+    def test_strips_bearer_prefix_before_verify(self):
+        verifier = _FakeJwtVerifier(
+            claims={
+                "sub": str(uuid.uuid4()),
                 "mail": "21.00000-0@maua.br",
-                "displayName": "Novo",
+                "name": "Novo",
             }
         )
         usecase = MicrosoftAuthorizerUsecase(
-            graph_client=graph,
+            jwt_verifier=verifier,
             user_repo=UserRepositoryMock(),
         )
 
         usecase(
-            authorization_token="Bearer abc.def",
+            authorization_token="Bearer abc.def.ghi",
             method_arn="arn:aws:execute-api:sa-east-1:123:api/POST/auth",
         )
 
-        assert graph.last_token == "abc.def"
+        assert verifier.last_token == "abc.def.ghi"

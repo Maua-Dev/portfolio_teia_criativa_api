@@ -3,7 +3,10 @@ from enum import Enum
 import os
 from src.shared.domain.observability.observability_interface import IObservability
 
+from src.shared.domain.repositories.member_repository_interface import IMemberRepository
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
+from src.shared.domain.repositories.project_repository_interface import IProjectRepository
+from src.shared.infra.external.dynamo.dynamo_keys import PK_ATTR, SK_ATTR
 
 
 class STAGE(Enum):
@@ -21,15 +24,17 @@ class Environments:
     Usage:
 
     """
+    # essenciais
     stage: STAGE
-    s3_bucket_name: str
     region: str
-    endpoint_url: str = None
     dynamo_table_name: str
     dynamo_partition_key: str
     dynamo_sort_key: str
-    cloud_frontget_user_presenter_distribution_domain: str
-    mss_name: str 
+    dynamo_endpoint_url: str = None  # DynamoDB Local (ex: http://localhost:8000); None na AWS
+    mss_name: str
+    # essenciais
+
+    s3_template_bucket1_name: str
 
     def _configure_local(self):
         from dotenv import load_dotenv
@@ -42,24 +47,25 @@ class Environments:
 
         self.stage = STAGE[os.environ.get("STAGE")]
         self.mss_name = os.environ.get("MSS_NAME")
-        
+
         if self.stage == STAGE.TEST:
-            self.s3_bucket_name = "bucket-test"
             self.region = "sa-east-1"
-            self.endpoint_url = "http://localhost:8000"
-            self.dynamo_table_name = "user_mss_template-table"
-            self.dynamo_partition_key = "PK"
-            self.dynamo_sort_key = "SK"
-            self.cloud_front_distribution_domain = "https://d3q9q9q9q9q9q9.cloudfront.net"
+            self.dynamo_table_name = "portfolio_teia_local-table"
+            self.dynamo_partition_key = PK_ATTR
+            self.dynamo_sort_key = SK_ATTR
+            self.dynamo_endpoint_url = "http://localhost:8000"
+            # alinhe com nome do bucket no minIO
+            self.s3_template_bucket1_name = "local_bucket_portfolio_1"
 
         else:
-            self.s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
+            # todas essas variáveis vem de ENVIRONMENT_VARIABLES em iac_stack.py
             self.region = os.environ.get("REGION")
-            self.endpoint_url = os.environ.get("ENDPOINT_URL")
             self.dynamo_table_name = os.environ.get("DYNAMO_TABLE_NAME")
             self.dynamo_partition_key = os.environ.get("DYNAMO_PARTITION_KEY")
             self.dynamo_sort_key = os.environ.get("DYNAMO_SORT_KEY")
-            self.cloud_front_distribution_domain = os.environ.get("CLOUD_FRONT_DISTRIBUTION_DOMAIN")
+            # só setar se usar DynamoDB Local/compatível fora da AWS; em Lambda real fica None
+            self.dynamo_endpoint_url = os.environ.get("DYNAMO_ENDPOINT_URL")
+            self.s3_template_bucket1_name = os.environ.get("S3_TEMPLATE_BUCKET1_NAME")
 
     @staticmethod
     def get_user_repo() -> IUserRepository:
@@ -71,6 +77,26 @@ class Environments:
             return UserRepositoryDynamo
         else:
             raise Exception("No repository found for this stage")
+        
+    @staticmethod
+    def get_member_repo() -> IMemberRepository:
+        if Environments.get_envs().stage == STAGE.TEST:
+            from src.shared.infra.repositories.member_repository_mock import MemberRepositoryMock
+            return MemberRepositoryMock
+        # TODO descomentar qdo subir o dynamo
+        # elif Environments.get_envs().stage in [STAGE.DEV, STAGE.HOMOLOG, STAGE.PROD]:
+        #     from src.shared.infra.repositories.user_repository_dynamo import UserRepositoryDynamo
+        #     return UserRepositoryDynamo
+        else:
+            raise Exception("No repository found for this stage")
+
+    @staticmethod
+    def get_project_repo() -> IProjectRepository:
+        if Environments.get_envs().stage == STAGE.TEST:
+            from src.shared.infra.repositories.project_repository_mock import ProjectRepositoryMock
+            return ProjectRepositoryMock
+        else:
+            raise Exception("No project repository found for this stage")
 
     @staticmethod
     def get_observability() -> IObservability:
@@ -82,6 +108,7 @@ class Environments:
             return ObservabilityAWS
         else:
             raise Exception("No observability class found for this stage")
+
     @staticmethod
     def get_envs() -> "Environments":
         """
@@ -95,4 +122,3 @@ class Environments:
 
     def __repr__(self):
         return self.__dict__
-

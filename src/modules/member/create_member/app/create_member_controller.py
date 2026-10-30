@@ -1,7 +1,7 @@
 from urllib.parse import urlparse
 
-from src.modules.create_member.app.create_member_usecase import CreateMemberUsecase
-from src.modules.create_member.app.create_member_viewmodel import CreateMemberViewModel
+from src.modules.member.create_member.app.create_member_usecase import CreateMemberUsecase
+from src.modules.member.create_member.app.create_member_viewmodel import CreateMemberViewModel
 from src.shared.helpers.auth.authorizer_user import USER_FROM_AUTHORIZER_KEY
 from src.shared.helpers.errors.controller_errors import InvalidImageUrl, MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError

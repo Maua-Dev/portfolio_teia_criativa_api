@@ -1,6 +1,6 @@
 import json
 
-from src.modules.create_member.app import create_member_presenter
+from src.modules.member.create_member.app import create_member_presenter
 from src.shared.domain.enums.role_enum import RoleEnum
 
 

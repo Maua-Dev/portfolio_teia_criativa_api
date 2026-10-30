@@ -1,5 +1,5 @@
-from src.modules.create_member.app.create_member_controller import CreateMemberController
-from src.modules.create_member.app.create_member_usecase import CreateMemberUsecase
+from src.modules.member.create_member.app.create_member_controller import CreateMemberController
+from src.modules.member.create_member.app.create_member_usecase import CreateMemberUsecase
 from src.shared.domain.enums.role_enum import RoleEnum
 from src.shared.helpers.auth.authorizer_user import USER_FROM_AUTHORIZER_KEY
 from src.shared.helpers.external_interfaces.http_models import HttpRequest

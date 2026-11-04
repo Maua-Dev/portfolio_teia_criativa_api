@@ -1,5 +1,6 @@
 from src.shared.domain.entities.user import User
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
+from src.shared.helpers.auth.authorization import require_admin
 from src.shared.helpers.errors.domain_errors import EntityError
 
 import uuid
@@ -8,7 +9,9 @@ class UpdateUserUsecase:
     def __init__(self, repo: IUserRepository):
         self.repo = repo
 
-    def __call__(self, user_id: str, new_email: str) -> User:
+    def __call__(self, user_id: str, new_email: str, requester_user_id: uuid.UUID) -> User:
+
+        require_admin(self.repo, requester_user_id)
 
         try:
             uuid.UUID(user_id)

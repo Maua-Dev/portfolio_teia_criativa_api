@@ -17,11 +17,11 @@ class Test_Member:
         with pytest.raises(ValidationError) as exc_info:
             Member(
                 member_id="c823058a-3607-4229-8473-04473e3514a6",
-                member_photo="https://teiacriativa.com/images/profile.png",
+                member_photo="https://teiacriativa.com/images/profile.bmp",
                 member_name="Carlos",
                 member_intro="Engenheiro de Software"
             )
-        assert "extensão .jpg" in str(exc_info.value)
+        assert "extensão .jpg, .jpeg, .png ou .webp" in str(exc_info.value)
 
     def test_member_invalid_uuid(self):
         with pytest.raises(ValidationError):

@@ -6,7 +6,14 @@ from src.shared.domain.entities.member import Member
 
 
 class IMemberRepository(ABC):
-    
+
+    @abstractmethod
+    def get_member(self, member_id: UUID) -> Member:
+        """
+        If member not found raise NoItemsFound
+        """
+        pass
+
     @abstractmethod
     def get_member(self, member_id: UUID) -> Member:
         """Return the member or raise NoItemsFound when it does not exist."""
@@ -18,4 +25,18 @@ class IMemberRepository(ABC):
 
     @abstractmethod
     def create_member(self, member: Member) -> Member:
+        pass
+
+    @abstractmethod
+    def delete_member(self, member_id: UUID) -> Member:
+        """
+        If member not found raise NoItemsFound
+        """
+        pass
+
+    @abstractmethod
+    def update_member(self, member: Member) -> Member:
+        """
+        If member not found raise NoItemsFound
+        """
         pass

@@ -1,10 +1,15 @@
 import json
+from src.modules.user.create_user.app import create_user_presenter as presenter_module
 from src.modules.user.create_user.app.create_user_presenter import lambda_handler
+from src.shared.domain.enums.role_enum import RoleEnum
 
 
 class Test_CreateUserPresenter:
 
     def test_create_user_presenter(self):
+        admin = presenter_module.repo.users[0].model_copy(update={"role": RoleEnum.ADMIN})
+        presenter_module.repo.users[0] = admin
+
         event = {
             "version": "2.0",
             "routeKey": "$default",
@@ -26,6 +31,11 @@ class Test_CreateUserPresenter:
                 "apiId": "<urlid>",
                 "authentication": None,
                 "authorizer": {
+                    "user": json.dumps({
+                        "sub": str(admin.id),
+                        "mail": admin.email,
+                        "name": admin.user_name,
+                    }),
                     "iam": {
                         "accessKey": "AKIA...",
                         "accountId": "111122223333",

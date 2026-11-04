@@ -15,6 +15,11 @@ class IMemberRepository(ABC):
         pass
 
     @abstractmethod
+    def get_member(self, member_id: UUID) -> Member:
+        """Return the member or raise NoItemsFound when it does not exist."""
+        pass
+
+    @abstractmethod
     def get_all_members(self) -> List[Member]:
         pass
 

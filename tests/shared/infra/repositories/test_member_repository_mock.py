@@ -2,6 +2,7 @@ import uuid
 
 import pytest
 
+from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.domain.entities.member import Member
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.infra.repositories.member_repository_mock import MemberRepositoryMock
@@ -11,15 +12,14 @@ class Test_MemberRepositoryMock:
     def test_get_member(self):
         repo = MemberRepositoryMock()
 
-        member = repo.get_member(uuid.UUID("f4019bd7-52d3-463d-8ab1-1d373c004a43"))
+        member = repo.get_member(repo.members[0].member_id)
 
-        assert member.member_id == uuid.UUID("f4019bd7-52d3-463d-8ab1-1d373c004a43")
-        assert member.member_name == "Alice Silva"
+        assert member == repo.members[0]
 
     def test_get_member_not_found(self):
         repo = MemberRepositoryMock()
 
-        with pytest.raises(NoItemsFound):
+        with pytest.raises(NoItemsFound, match="No items found for member_id"):
             repo.get_member(uuid.uuid4())
 
     def test_get_all_members(self):

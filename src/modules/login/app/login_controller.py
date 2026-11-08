@@ -6,34 +6,42 @@ from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound, InvalidJwtFormat, EnvVarNotFound
 from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
 from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadRequest, InternalServerError
+from .login_viewmodel import LoginViewmodel
 
 
 class LoginController:
 
     def __init__(self, usecase: LoginUsecase, observability: ObservabilityAWS):
-        self.LoginUsecase = usecase
+        self.usecase = usecase
         self.observability = observability
 
     def __call__(self, request: IRequest) -> IResponse:
         
         try:
-            
             id_token = request.data.get("id_token")
-            
-            #TODO validações controller missing / wtp
-            
+
+            if id_token is None:
+                raise MissingParameters("id_token")
+            if not isinstance(id_token, str):
+                raise WrongTypeParameter(
+                    fieldName="id_token",
+                    fieldTypeExpected="str",
+                    fieldTypeReceived=type(id_token).__name__,
+                )
+
             access_token, refresh_token, user_info = self.usecase(
-                id_token = id_token
+                id_token=id_token
             )
-            
-            #TODO instanciar o viewmodel
-            
+
+            viewmodel = LoginViewmodel(access_token=access_token, user=user_info)
             return OK(
-                # TODO
-                # passa o viewmodel em body:
-                # passa o resfresh token usando o Set-Cookie (olhar no arquivo src.shared.helpers.external_interfaces.http_codes)
-                # esse setcookie é uma chave pra ja setar esse retorno como um cookie no navegador do cara
-                # HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=604800
+                body=viewmodel.to_dict(),
+                headers={
+                    "Set-Cookie": (
+                        f"refresh_token={refresh_token}; HttpOnly; Secure; "
+                        "SameSite=Strict; Path=/; Max-Age=604800"
+                    )
+                },
             )
             
         except JwtVerificationError as err:

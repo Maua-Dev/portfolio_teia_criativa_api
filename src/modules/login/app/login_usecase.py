@@ -1,11 +1,16 @@
 import os
 import secrets
 import time
+from uuid import UUID
 
 from src.shared.domain.entities.user import User
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.helpers.errors.external_errors import JwtVerificationError
-from src.shared.helpers.errors.usecase_errors import EnvVarNotFound
+from src.shared.helpers.errors.usecase_errors import (
+    EnvVarNotFound,
+    InvalidJwtFormat,
+    NoItemsFound,
+)
 from src.shared.infra.external.jwt.jwt_kms_signer import JwtKmsSigner
 from src.shared.infra.external.microsoft.id_token_verifier import MicrosoftIdTokenVerifier
 from src.shared.infra.external.observability.observability_aws import ObservabilityAWS
@@ -24,13 +29,13 @@ class LoginUsecase:
         self.jwt_signer = jwt_signer
         self.ms_id_token_verifier = ms_id_token_verifier
 
-    def __call__(self, id_token: str) -> tuple[str, str]:
+    def __call__(self, id_token: str) -> tuple[str, str, User]:
 
         try:
             verifier = self._get_ms_id_token_verifier()
             ms_payload = verifier.verify(id_token)
             user_sub = ms_payload.get("oid")
-            user_mail = ms_payload.get("preferred_username") # sim, o email aparece nessa chave
+            user_mail = ms_payload.get("preferred_username")
             user_name = ms_payload.get("name")
         except (JwtVerificationError, EnvVarNotFound) as e:
             self.observability.log_error(
@@ -38,31 +43,40 @@ class LoginUsecase:
             )
             raise JwtVerificationError("Token de autenticação inválido") from e
 
-        # TODO bate o user_sub (variavel linha 31) no nosso banco pra procurar o usuário
-        # da o nome pra variável de "user" pra alinha com o código abaixo
-        # TODO atribui essa usuário encontrado a variavel user
-        
-        if not user:
-            
+        if not all(
+            isinstance(value, str) and value
+            for value in (user_sub, user_mail, user_name)
+        ):
+            raise InvalidJwtFormat()
+
+        try:
+            user_id = UUID(user_sub)
+        except ValueError as err:
+            raise InvalidJwtFormat("oid") from err
+
+        try:
+            user = self.repo.get_user(user_id=user_id)
+        except NoItemsFound:
             user = self.repo.create_user(
                 new_user=User(
-                    id=user_sub,
+                    id=user_id,
                     email=user_mail,
-                    user_name=user_name
+                    user_name=user_name,
                 )
             )
 
+        if not user:
+            raise RuntimeError("User repository returned no user")
+
         access_payload = {
-            "user_id": user.user_id,  # ID interno do seu banco
-            "role": user.role,  # Permissão (ex: 'admin')
-            "exp": int(time.time()) + (30 * 60),  # 30 minutos
+            "user_id": str(user.id),
+            "role": user.role.value,
+            "exp": int(time.time()) + (30 * 60),
         }
 
-        # TODO usa a função _sign_access_token para assinar o payload
+        access_token = self._sign_access_token(access_payload)
 
         refresh_token = secrets.token_hex(32)
-
-        # self.repo.save_refresh_token(user.user_id, refresh_token) - nao precisa implementar agora
 
         return access_token, refresh_token, user
 

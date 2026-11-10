@@ -47,8 +47,12 @@ class IacStack(Stack):
             stage=stage,
         )
         
-        #TODO instanciar o KMS igual os outros constructs
-        self.kms_construct = ...
+        self.kms_construct = KMSConstruct(
+            self,
+            construct_id="KMS",
+            stack_name=stack_name,
+            stage=stage,
+        )
 
         # alinhado com Environments.load_envs() (stages DEV/HOMOLOG/PROD)
         ENVIRONMENT_VARIABLES = {

@@ -1,6 +1,9 @@
 
-from aws_cdk import aws_kms as kms
+from aws_cdk import RemovalPolicy, aws_kms as kms
 from constructs import Construct
+
+
+RETAINED_STAGES = {"prod", "homolog"}
 
 
 class KMSConstruct(Construct):
@@ -18,5 +21,18 @@ class KMSConstruct(Construct):
         
         super().__init__(scope, construct_id, **kwargs)
         
-        #TODO add self.jwt_sign_key = kms.Key(...) 
-        # - chave que vai ser usada pra gente assinar os jwts na rota de login e verificar assinaturas no authorizer
+        stage_lower = stage.lower()
+        removal_policy = (
+            RemovalPolicy.RETAIN
+            if stage_lower in RETAINED_STAGES
+            else RemovalPolicy.DESTROY
+        )
+
+        self.jwt_sign_key = kms.Key(
+            self,
+            id="JwtSignKey",
+            description=f"JWT signing key for {stack_name} ({stage_lower})",
+            key_spec=kms.KeySpec.RSA_2048,
+            key_usage=kms.KeyUsage.SIGN_VERIFY,
+            removal_policy=removal_policy,
+        )
